@@ -15,7 +15,7 @@ but I have only personally confirmed my own RTX 3090 setup.
 This is a community experiment, not an official OpenMW or NVIDIA release. NVIDIA
 officially targets DLSS 5 at RTX 50-series hardware. Running it on an older RTX card
 through DLSS5-Feeder and RenoDX is unsupported and may behave differently from one
-driver or GPU to another.
+driver or GPU to another. Please feel free to fork as needed. 
 
 ## Demo
 
@@ -124,17 +124,6 @@ advanced escape hatch and may bring back resolution-change crashes.
 - **Resolution changes froze or crashed:** the feeder destroyed Vulkan resources that
   were still in use. Installation now requires the validated device-idle/resize-safe
   feeder build unless the safety check is explicitly overridden.
-- **Settings did not reliably apply:** both launchers use OpenMW's normal user profile.
-  OpenMW writes changes on a normal exit; crashes or forced termination can lose them.
-- **Balmora was black or constantly popping:** the failing configuration combined an
-  81,920-unit view distance, 8x MSAA, full groundcover, large shadows, and dense BCoM
-  geometry. The installed stability profile disables MSAA/VSync, uses a moderate view
-  distance, and explicitly enables object paging.
-- **Depth was black or incorrect:** the installed ReShade configuration uses reversed
-  Zink depth and copies depth before clear index 1.
-- **The main menu was dark:** the diagnostic depth preset is no longer used at startup.
-- **Startup appeared frozen:** disabled effects are skipped and only the known-good
-  shader set is installed.
 
 ## Starting OpenMW
 
@@ -160,21 +149,11 @@ exits normally. A crash or forced termination may lose changes from that session
 
 ## Performance tip: try 1080p first
 
-Neural Rendering is expensive on an RTX 3090. If performance is poor, try OpenMW at
-`1920x1080` in windowed or borderless mode.
+Neural Rendering is expensive. If performance is poor, try OpenMW at
+`1920x1080` or lower in windowed or borderless mode.
 
 You can optionally use [Lossless Scaling](https://losslessscaling.com/) to scale that
-window to your monitor and add LSFG frame generation:
-
-1. Get the game stable at 1920x1080 first.
-2. Try LS1 or FSR scaling without frame generation.
-3. If that works, try LSFG at a fixed 2x multiplier.
-4. Judge input latency, UI artifacts, camera-motion artifacts, and frame pacing—not
-   just the FPS counter.
-
-Lossless Scaling is a separate commercial application. It is not included or tested
-by this repository. It only reduces the DLSS workload if OpenMW itself is running at
-the lower resolution.
+window to your monitor and add LSFG frame generation.
 
 ## Current limitations
 
