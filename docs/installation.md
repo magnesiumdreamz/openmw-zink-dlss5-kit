@@ -2,9 +2,10 @@
 
 ## Safety model
 
-The base installation changes only the isolated destination. User settings, desktop
-shortcuts, saved mod profiles, and the system ReShade Vulkan registration are changed
-only when their corresponding opt-in switches are supplied. Profile imports validate
+The base installation changes the isolated destination and backs up/applies the tested
+OpenMW stability settings. Use `-SkipStableSettings` to leave user settings unchanged.
+Desktop shortcuts, saved mod profiles, and the system ReShade Vulkan registration are
+changed only when their corresponding opt-in switches are supplied. Profile imports validate
 all referenced data directories and plugins before writing and create timestamped
 backups. `-RegisterReShade` requires elevation because its application list is stored
 under `C:\ProgramData`.

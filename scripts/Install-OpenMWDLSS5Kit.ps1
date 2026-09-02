@@ -12,6 +12,8 @@ param(
     [string] $ReShadeConfigName = 'ReShade.ini',
     [switch] $UpdateExisting,
     [switch] $ApplyStableSettings,
+    [switch] $SkipStableSettings,
+    [switch] $AllowUnvalidatedFeeder,
     [string] $ImportProfilePath,
     [string] $ModRoot,
     [string] $BaseDataPath,
@@ -83,6 +85,12 @@ $required = [ordered]@{
     RenoDXAddon = Find-OneFile $renodx 'renodx-dlss5.addon64' 'RenoDX/RHI'
     DLSS = Find-OneFile $renodx 'nvngx_dlss.dll' 'RenoDX/RHI'
     DLSSNR = Find-OneFile $renodx 'nvngx_dlssnr.dll' 'RenoDX/RHI'
+}
+
+$knownFeederHashes = @(Get-Content (Join-Path $projectRoot 'config\known-good-feeder-sha256.txt') | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^[A-Fa-f0-9]{64}$' })
+$feederHash = (Get-FileHash -LiteralPath $required.FeederAddon -Algorithm SHA256).Hash
+if ($feederHash -notin $knownFeederHashes -and -not $AllowUnvalidatedFeeder) {
+    throw "Unvalidated dlss5-feed.addon64 (SHA256 $feederHash). Use the tested resize-safe build, build the included patch, or explicitly accept resolution-change crash risk with -AllowUnvalidatedFeeder. No files were changed."
 }
 
 $vortIncludes = @(Get-ChildItem -LiteralPath $vort -Recurse -File -Filter 'vort_*.fxh')
@@ -163,11 +171,12 @@ foreach ($preset in 'OpenMW-Stable.ini', 'OpenMW-MXAO.ini', 'OpenMW-Depth-Diagno
 Copy-WithBackup (Join-Path $projectRoot 'scripts\Launch-OpenMW-Zink.cmd') (Join-Path $destination 'Launch-OpenMW-Zink.cmd') $backupRoot
 Copy-WithBackup (Join-Path $projectRoot 'scripts\Launch-OpenMW-Launcher-Zink.cmd') (Join-Path $destination 'Launch-OpenMW-Launcher-Zink.cmd') $backupRoot
 
-if ($ApplyStableSettings -or $ImportProfilePath) {
+$useStableSettings = $ApplyStableSettings -or -not $SkipStableSettings
+if ($useStableSettings -or $ImportProfilePath) {
     $profileArgs = @{
         UserConfigPath = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'My Games\OpenMW'
     }
-    if ($ApplyStableSettings) { $profileArgs.ApplyStableSettings = $true }
+    if ($useStableSettings) { $profileArgs.ApplyStableSettings = $true }
     if ($ImportProfilePath) { $profileArgs.ImportProfilePath = $ImportProfilePath }
     if ($ModRoot) { $profileArgs.ModRoot = $ModRoot }
     if ($BaseDataPath) { $profileArgs.BaseDataPath = $BaseDataPath }

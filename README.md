@@ -72,16 +72,15 @@ it needs are present before it writes anything. It will not overwrite a non-empt
 destination unless you add `-UpdateExisting`, and it backs up integration files that
 it replaces.
 
-By default, this command changes only the new destination folder. It does not change
-your user settings, desktop, mod profile, or system ReShade registration.
+By default, the installer also backs up and applies the tested OpenMW stability
+settings. Add `-SkipStableSettings` to leave your user `settings.cfg` unchanged.
+Desktop shortcuts, mod import, and system ReShade registration remain opt-in.
 
 ## Recommended setup options
 
-The following options are available, but only run when you explicitly add them:
+The stable settings disable MSAA, VSync, and the frame limiter, use a 16,310-unit view
+distance, and enable object paging. The following additional options are opt-in:
 
-- `-ApplyStableSettings` turns off MSAA, VSync, and OpenMW's frame limiter, sets a
-  conservative view distance, and enables object paging. These settings fixed severe
-  popping and black-screen behavior in a heavily modded Balmora test.
 - `-CreateDesktopShortcuts` adds shortcuts for the game and OpenMW Launcher.
 - `-RegisterReShade` points the system ReShade Vulkan layer at the new `openmw.exe`.
   This option requires PowerShell to be run as administrator and backs up the previous
@@ -100,6 +99,32 @@ A typical first install might add:
 
 Profile and settings changes receive timestamped backups. You can preview the profile
 tool without writing anything by running `Configure-OpenMWStableProfile.ps1 -WhatIf`.
+
+The installer accepts only the tested resize-safe feeder binary by default. An unknown
+binary stops installation before anything is written. `-AllowUnvalidatedFeeder` is an
+advanced escape hatch and may bring back resolution-change crashes.
+
+## Problems encountered while building this
+
+- **Transparent game window:** blended areas showed the desktop and other applications.
+  The installed `OpenMW_OpaquePresent` shader forces final alpha to opaque and is placed
+  last in the preset.
+- **White or grey flickering:** the final presentation fix, minimal shader set, and
+  removal of unstable experimental lighting effects substantially reduced it.
+- **Resolution changes froze or crashed:** the feeder destroyed Vulkan resources that
+  were still in use. Installation now requires the validated device-idle/resize-safe
+  feeder build unless the safety check is explicitly overridden.
+- **Settings did not reliably apply:** both launchers use OpenMW's normal user profile.
+  OpenMW writes changes on a normal exit; crashes or forced termination can lose them.
+- **Balmora was black or constantly popping:** the failing configuration combined an
+  81,920-unit view distance, 8x MSAA, full groundcover, large shadows, and dense BCoM
+  geometry. The installed stability profile disables MSAA/VSync, uses a moderate view
+  distance, and explicitly enables object paging.
+- **Depth was black or incorrect:** the installed ReShade configuration uses reversed
+  Zink depth and copies depth before clear index 1.
+- **The main menu was dark:** the diagnostic depth preset is no longer used at startup.
+- **Startup appeared frozen:** disabled effects are skipped and only the known-good
+  shader set is installed.
 
 ## Starting OpenMW
 
