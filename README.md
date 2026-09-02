@@ -21,7 +21,7 @@ driver or GPU to another. Please feel free to fork as needed.
 
 [Watch the OpenMW DLSS 5 video demonstration on YouTube](https://www.youtube.com/watch?v=XIfJCVSPQsg).
 
-These screenshots show my running RTX 3090 implementation in an interior scene:
+Here are a few screens from the Mages Guild in Balmora:
 
 ![OpenMW DLSS 5 interior scene with a character, candles, and an open book](docs/images/openmw-dlss5-interior-candles.png)
 
