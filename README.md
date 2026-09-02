@@ -67,7 +67,9 @@ You need:
 
 ## Installing the kit
 
-Download or clone this repository, open PowerShell in its folder, and run:
+Download or clone this repository, open **PowerShell as administrator** in its folder,
+and run the following complete example. Change every example path to match your
+computer:
 
 ```powershell
 .\scripts\Install-OpenMWDLSS5Kit.ps1 `
@@ -78,13 +80,29 @@ Download or clone this repository, open PowerShell in its folder, and run:
   -BuildPatchedFeeder `
   -VortPath 'C:\Downloads\vort_Shaders' `
   -QuintPath 'C:\Downloads\qUINT' `
-  -RenoDXPath 'C:\Downloads\RHI-components'
+  -RenoDXPath 'C:\Downloads\RHI-components' `
+  -ReShadeConfigName 'ReShade.ini' `
+  -ApplyStableSettings `
+  -CreateDesktopShortcuts `
+  -RegisterReShade `
+  -ImportProfilePath 'C:\Backups\OpenMW-profile' `
+  -ModRoot 'C:\Games\Morrowind-Mods\mods' `
+  -BaseDataPath 'C:\Games\Morrowind\Data Files' `
+  -OverwritePath 'C:\Games\Morrowind-Mods\overwrite' `
+  -AdditionalDataPath @(
+    'C:\Games\Morrowind-Mods\groundcover',
+    'C:\Games\Morrowind-Mods\creature-replacements'
+  )
 ```
 
-Change the example paths to match your computer. The installer checks that the files
-it needs are present before it writes anything. It will not overwrite a non-empty
-destination unless you add `-UpdateExisting`, and it backs up integration files that
-it replaces.
+If you do not have a saved OpenMW mod profile, remove `-ImportProfilePath`, `-ModRoot`,
+`-BaseDataPath`, `-OverwritePath`, and `-AdditionalDataPath`. The remaining command
+still performs the complete normal setup: stable settings, feeder build, shortcuts,
+and ReShade registration. Administrator mode is needed only for `-RegisterReShade`.
+
+The installer checks that the files it needs are present before it writes the runtime.
+It will not overwrite a non-empty destination unless you add `-UpdateExisting`, and
+it backs up integration files that it replaces.
 
 By default, the installer also backs up and applies the tested OpenMW stability
 settings. Add `-SkipStableSettings` to leave your user `settings.cfg` unchanged.
@@ -113,13 +131,6 @@ distance, and enable object paging. The following additional options are opt-in:
   profile. The script checks every directory and plugin before changing the profile.
   Use `-BaseDataPath`, `-OverwritePath`, and `-AdditionalDataPath` when the saved
   profile came from a different folder layout.
-
-A typical first install might add:
-
-```powershell
-  -ApplyStableSettings `
-  -CreateDesktopShortcuts
-```
 
 Profile and settings changes receive timestamped backups. You can preview the profile
 tool without writing anything by running `Configure-OpenMWStableProfile.ps1 -WhatIf`.
