@@ -147,7 +147,7 @@ preset.
 OpenMW saves in-game setting changes to its normal user `settings.cfg` when the game
 exits normally. A crash or forced termination may lose changes from that session.
 
-## Performance tip: try 1080p first
+## Performance tips
 
 Neural Rendering is expensive. If performance is poor, try OpenMW at
 `1920x1080` or lower in windowed or borderless mode.
