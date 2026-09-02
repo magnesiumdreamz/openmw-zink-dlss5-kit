@@ -29,13 +29,20 @@ Required filenames:
 ```text
 Mesa:            opengl32.dll, libgallium_wgl.dll
 ReShade shaders: ReShade.fxh, ReShadeUI.fxh
-DLSS5-Feeder:    dlss5-feed.addon64, DLSS5_Feed.fx
+DLSS5-Feeder:    generated with -BuildPatchedFeeder, or supply
+                 dlss5-feed.addon64 and DLSS5_Feed.fx with -FeederPath
 VORT:            vort_Motion.fx, vort_*.fxh, required vort_* texture files
 qUINT:           qUINT_mxao.fx, qUINT_common.fxh
 RenoDX/RHI:      renodx-dlss5.addon64, nvngx_dlss.dll, nvngx_dlssnr.dll
 ```
 
 Use authorized NVIDIA binaries. Do not download DLLs from random mirrors.
+
+For the automatic feeder build, first install Git for Windows and Visual Studio 2022
+Build Tools with the Desktop development with C++ workload. The installer downloads
+only commit-pinned source/header archives and the validated feeder shader. It applies
+the resize-safety patch before compiling and records the source commits, patch hash,
+and resulting binary hash in `feeder-build-provenance.json`.
 
 ## Build the runtime
 

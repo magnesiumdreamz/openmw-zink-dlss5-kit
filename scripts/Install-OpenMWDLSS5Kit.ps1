@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory)] [string] $DestinationPath,
     [Parameter(Mandatory)] [string] $MesaPath,
     [Parameter(Mandatory)] [string] $ReShadeShaderPath,
-    [Parameter(Mandatory)] [string] $FeederPath,
+    [string] $FeederPath,
     [Parameter(Mandatory)] [string] $VortPath,
     [Parameter(Mandatory)] [string] $QuintPath,
     [Parameter(Mandatory)] [string] $RenoDXPath,
@@ -13,6 +13,9 @@ param(
     [switch] $UpdateExisting,
     [switch] $ApplyStableSettings,
     [switch] $SkipStableSettings,
+    [switch] $BuildPatchedFeeder,
+    [string] $FeederBuildOutputPath = (Join-Path $env:LOCALAPPDATA 'OpenMW-DLSS5-Kit\validated-feeder'),
+    [string] $FeederBuildWorkPath = (Join-Path $env:LOCALAPPDATA 'OpenMW-DLSS5-Kit\feeder-build'),
     [switch] $AllowUnvalidatedFeeder,
     [string] $ImportProfilePath,
     [string] $ModRoot,
@@ -59,6 +62,14 @@ function Copy-WithBackup([string] $Source, [string] $Target, [string] $BackupRoo
 $openmw = Resolve-Directory $OpenMWPath 'OpenMW'
 $mesa = Resolve-Directory $MesaPath 'Mesa'
 $reshadeShaders = Resolve-Directory $ReShadeShaderPath 'ReShade shaders'
+if ($BuildPatchedFeeder) {
+    if ($FeederPath) { throw 'Use either -FeederPath or -BuildPatchedFeeder, not both.' }
+    $FeederPath = $FeederBuildOutputPath
+    & (Join-Path $PSScriptRoot 'Build-PatchedDLSS5Feeder.ps1') -OutputPath $FeederPath -WorkPath $FeederBuildWorkPath
+}
+if (-not $FeederPath) {
+    throw 'Supply -FeederPath with a validated binary, or use -BuildPatchedFeeder to download, patch, and compile it automatically.'
+}
 $feeder = Resolve-Directory $FeederPath 'DLSS5-Feeder'
 $vort = Resolve-Directory $VortPath 'VORT'
 $quint = Resolve-Directory $QuintPath 'qUINT'
@@ -89,7 +100,15 @@ $required = [ordered]@{
 
 $knownFeederHashes = @(Get-Content (Join-Path $projectRoot 'config\known-good-feeder-sha256.txt') | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^[A-Fa-f0-9]{64}$' })
 $feederHash = (Get-FileHash -LiteralPath $required.FeederAddon -Algorithm SHA256).Hash
-if ($feederHash -notin $knownFeederHashes -and -not $AllowUnvalidatedFeeder) {
+$generatedProvenance = Join-Path $feeder 'feeder-build-provenance.json'
+$generatedFeederIsValid = $false
+if ($BuildPatchedFeeder -and (Test-Path -LiteralPath $generatedProvenance -PathType Leaf)) {
+    $provenance = Get-Content -LiteralPath $generatedProvenance -Raw | ConvertFrom-Json
+    $patchHash = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'patches\dlss5-feeder-vulkan-resize-idle.patch') -Algorithm SHA256).Hash
+    $generatedFeederIsValid = $provenance.feederSourceCommit -eq '7c58e39e55e03f971da7d0002c837eed7d21a243' -and
+        $provenance.patchSha256 -eq $patchHash -and $provenance.addonSha256 -eq $feederHash
+}
+if ($feederHash -notin $knownFeederHashes -and -not $generatedFeederIsValid -and -not $AllowUnvalidatedFeeder) {
     throw "Unvalidated dlss5-feed.addon64 (SHA256 $feederHash). Use the tested resize-safe build, build the included patch, or explicitly accept resolution-change crash risk with -AllowUnvalidatedFeeder. No files were changed."
 }
 

@@ -52,7 +52,8 @@ You need:
 2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
 3. ReShade with add-on support, installed as a Vulkan layer. You also need
    `ReShade.fxh` and `ReShadeUI.fxh` from the ReShade shader repository.
-4. DLSS5-Feeder, including `dlss5-feed.addon64` and `DLSS5_Feed.fx`.
+4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
+   patch, and compile DLSS5-Feeder automatically.
 5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
 6. qUINT MXAO, including `qUINT_mxao.fx` and `qUINT_common.fxh`.
 7. The RenoDX/RHI DLSS components: `renodx-dlss5.addon64`, an authorized
@@ -71,7 +72,7 @@ Download or clone this repository, open PowerShell in its folder, and run:
   -DestinationPath 'C:\Games\OpenMW-Zink-DLSS5' `
   -MesaPath 'C:\Downloads\mesa3d-msvc' `
   -ReShadeShaderPath 'C:\Downloads\reshade-shaders' `
-  -FeederPath 'C:\Downloads\DLSS5-Feeder' `
+  -BuildPatchedFeeder `
   -VortPath 'C:\Downloads\vort_Shaders' `
   -QuintPath 'C:\Downloads\qUINT' `
   -RenoDXPath 'C:\Downloads\RHI-components'
@@ -85,6 +86,12 @@ it replaces.
 By default, the installer also backs up and applies the tested OpenMW stability
 settings. Add `-SkipStableSettings` to leave your user `settings.cfg` unchanged.
 Desktop shortcuts, mod import, and system ReShade registration remain opt-in.
+
+`-BuildPatchedFeeder` downloads the commit-pinned feeder, NVIDIA NGX SDK, Vulkan
+headers, and validated feeder shader; applies the included resize-safety patch; and
+compiles the add-on. It does not download the proprietary runtime DLLs used by
+RenoDX. If you already built the validated feeder, replace the switch with
+`-FeederPath 'C:\path\to\feeder-output'`.
 
 ## Recommended setup options
 
@@ -110,9 +117,10 @@ A typical first install might add:
 Profile and settings changes receive timestamped backups. You can preview the profile
 tool without writing anything by running `Configure-OpenMWStableProfile.ps1 -WhatIf`.
 
-The installer accepts only the tested resize-safe feeder binary by default. An unknown
-binary stops installation before anything is written. `-AllowUnvalidatedFeeder` is an
-advanced escape hatch and may introduce resolution-change crashes.
+The installer accepts either the previously tested resize-safe feeder binary or a
+feeder produced from the pinned source and patch by `-BuildPatchedFeeder`. An unknown
+external binary stops installation before anything is written. `-AllowUnvalidatedFeeder`
+is an advanced escape hatch and may introduce resolution-change crashes.
 
 ## Problems encountered while building this
 

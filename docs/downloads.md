@@ -10,14 +10,20 @@ These links are versioned or commit-pinned so they do not silently change.
 | ReShade shader includes | [Commit 6db142b](https://github.com/crosire/reshade-shaders/archive/6db142b4b1a05c764222e5b0bd9a644b7ccfe1dc.zip) |
 | DLSS5-Feeder source | [Tested commit 7c58e39](https://github.com/jlrouzies-fr/DLSS5-Feeder/archive/7c58e39e55e03f971da7d0002c837eed7d21a243.zip) |
 | DLSS5 feeder shader | [v0.6.0-beta.1 shader](https://github.com/jlrouzies-fr/DLSS5-Feeder/releases/download/v0.6.0-beta.1/DLSS5_Feed.fx) |
+| NVIDIA NGX/DLSS build SDK | [Pinned NVIDIA/DLSS commit a291cc7](https://github.com/NVIDIA/DLSS/archive/a291cc7d2cc642a51566f3dfd5376f635cd1b284.zip) |
+| Vulkan build headers | [Pinned Khronos commit 3138637](https://github.com/KhronosGroup/Vulkan-Headers/archive/31386378257ac8653ce5b32c93baec385259ebbe.zip) |
 | VORT motion shader | [Commit b410b9f](https://github.com/Vortigern11/vort_Shaders/archive/b410b9f0c0fbb83c8cb42164aaf1655fab386f4a.zip) |
 | qUINT MXAO | [Commit 98fed77](https://github.com/martymcmodding/qUINT/archive/98fed77b26669202027f575a6d8f590426c21ebd.zip) |
 | RHI 2.4.9 | [RHI-Setup.exe](https://github.com/RankFTW/RHI/releases/download/RHI-2.4.9/RHI-Setup.exe) |
+| Git for Windows | [Official Windows download](https://git-scm.com/download/win) |
+| Visual Studio 2022 Build Tools | [Official Microsoft download](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) |
 
-Build the feeder binary from the pinned source after applying
+Install the Visual Studio **Desktop development with C++** workload, including MSVC
+and a Windows SDK. Passing `-BuildPatchedFeeder` to the kit installer automatically
+downloads the three pinned source archives above, applies
 [`dlss5-feeder-vulkan-resize-idle.patch`](../patches/dlss5-feeder-vulkan-resize-idle.patch),
-following [`building-feeder.md`](building-feeder.md). The public v0.7.0 binary does
-not document this OpenMW resize fix and does not pass the known-good hash check.
+and builds the feeder. See [`building-feeder.md`](building-feeder.md) for the exact
+process. The public v0.7.0 binary does not document this OpenMW resize fix.
 
 Use RHI/RenoDX to obtain `renodx-dlss5.addon64`, `nvngx_dlss.dll`, and
 `nvngx_dlssnr.dll` from authorized sources. There is intentionally no unofficial DLL

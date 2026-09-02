@@ -97,3 +97,28 @@ The feeder may briefly report its technique missing before ReShade finishes comp
 it subsequently discovers the technique and all required textures. The neural add-on
 also logs that one optional `EvaluateFeature_C` symbol was not found, while the normal
 evaluate hook and feature 18 continue successfully. Neither message blocked this run.
+
+## Automatic patched-feeder validation
+
+Date: 2026-09-02
+
+The `-BuildPatchedFeeder` path was tested from empty build/output directories. It
+downloaded the feeder at commit `7c58e39`, NVIDIA/DLSS at `a291cc7`, and Vulkan-Headers
+at `3138637`; validated the downloaded ZIPs; applied the repository resize-safety
+patch; compiled `dlss5-feed.addon64`; and emitted `feeder-build-provenance.json`.
+
+The main installer then accepted that generated provenance and installed the feeder
+into a second isolated OpenMW destination. A 20-second runtime smoke test reported:
+
+```text
+OpenGL Renderer: zink Vulkan 1.4(NVIDIA GeForce RTX 3090 (NVIDIA_PROPRIETARY))
+EnableHooks=2
+feature ready: 1920x1080 DLAA
+frame 1, 2, and 3 delivered
+signed DLSSNR 310.8.0 D3D12 runtime initialized
+inline feature 18 evaluation succeeded (count=1)
+inline feature 18 evaluation succeeded (count=60)
+```
+
+The test used a copied sandbox profile. The stable runtime was not modified, and the
+system ReShade application registration was restored afterward.
