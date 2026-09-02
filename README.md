@@ -17,6 +17,9 @@ officially targets DLSS 5 at RTX 50-series hardware. Running it on an older RTX 
 through DLSS5-Feeder and RenoDX is unsupported and may behave differently from one
 driver or GPU to another. Please feel free to fork as needed.
 
+[Download the latest release](https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/releases/latest)
+or clone `main` for the same tested installer files.
+
 ## Demo
 
 [Watch the OpenMW DLSS 5 video demonstration on YouTube](https://www.youtube.com/watch?v=XIfJCVSPQsg).
@@ -92,6 +95,10 @@ headers, and validated feeder shader; applies the included resize-safety patch; 
 compiles the add-on. It does not download the proprietary runtime DLLs used by
 RenoDX. If you already built the validated feeder, replace the switch with
 `-FeederPath 'C:\path\to\feeder-output'`.
+
+This switch automates only the feeder build. ReShade's Vulkan layer must still be
+installed separately, and the RenoDX/NVIDIA runtime files must still be obtained
+through an authorized RHI workflow and supplied with `-RenoDXPath`.
 
 ## Recommended setup options
 
