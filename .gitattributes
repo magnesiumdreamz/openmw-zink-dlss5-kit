@@ -1,0 +1,5 @@
+*.patch whitespace=-blank-at-eol
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.ini text eol=crlf
+*.cfg text eol=crlf

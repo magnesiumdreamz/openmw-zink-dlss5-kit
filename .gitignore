@@ -1,0 +1,32 @@
+# Locally assembled applications and downloaded third-party content
+runtime/
+third_party/
+
+# Captured evidence may contain machine paths and can be very large
+artifacts/archive/
+artifacts/logs/*
+artifacts/screenshots/*
+artifacts/traces/*
+!artifacts/logs/.gitkeep
+!artifacts/screenshots/.gitkeep
+!artifacts/traces/.gitkeep
+
+# Generated runtime files
+*.log
+kit-backup-*/
+kit-install-manifest.sha256
+
+# Proprietary or redistributable-only-at-source binaries must never be committed
+nvngx_*.dll
+*.addon64
+*.addon32
+*.exe
+*.msi
+*.7z
+*.zip
+
+# Editor and OS metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
