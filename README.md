@@ -112,7 +112,7 @@ tool without writing anything by running `Configure-OpenMWStableProfile.ps1 -Wha
 
 The installer accepts only the tested resize-safe feeder binary by default. An unknown
 binary stops installation before anything is written. `-AllowUnvalidatedFeeder` is an
-advanced escape hatch and may bring back resolution-change crashes.
+advanced escape hatch and may introduce resolution-change crashes.
 
 ## Problems encountered while building this
 
