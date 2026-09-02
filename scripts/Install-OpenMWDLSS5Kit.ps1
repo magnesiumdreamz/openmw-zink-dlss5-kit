@@ -10,7 +10,15 @@ param(
     [Parameter(Mandatory)] [string] $RenoDXPath,
     [ValidateSet('ReShade.ini', 'ReShade2.ini', 'ReShade3.ini')]
     [string] $ReShadeConfigName = 'ReShade.ini',
-    [switch] $UpdateExisting
+    [switch] $UpdateExisting,
+    [switch] $ApplyStableSettings,
+    [string] $ImportProfilePath,
+    [string] $ModRoot,
+    [string] $BaseDataPath,
+    [string] $OverwritePath,
+    [string[]] $AdditionalDataPath,
+    [switch] $CreateDesktopShortcuts,
+    [switch] $RegisterReShade
 )
 
 Set-StrictMode -Version Latest
@@ -99,6 +107,14 @@ if ($runningDestination.Count -gt 0) {
     throw "Close the destination OpenMW process before installing or updating: $destinationExe"
 }
 
+if ($RegisterReShade) {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        throw '-RegisterReShade requires an elevated PowerShell window. No files were changed.'
+    }
+}
+
 if (-not $PSCmdlet.ShouldProcess($destination, 'Build isolated OpenMW Zink DLSS5 runtime')) { return }
 
 if (-not $destinationExists) { New-Item -ItemType Directory -Path $destination | Out-Null }
@@ -146,6 +162,61 @@ foreach ($preset in 'OpenMW-Stable.ini', 'OpenMW-MXAO.ini', 'OpenMW-Depth-Diagno
 }
 Copy-WithBackup (Join-Path $projectRoot 'scripts\Launch-OpenMW-Zink.cmd') (Join-Path $destination 'Launch-OpenMW-Zink.cmd') $backupRoot
 Copy-WithBackup (Join-Path $projectRoot 'scripts\Launch-OpenMW-Launcher-Zink.cmd') (Join-Path $destination 'Launch-OpenMW-Launcher-Zink.cmd') $backupRoot
+
+if ($ApplyStableSettings -or $ImportProfilePath) {
+    $profileArgs = @{
+        UserConfigPath = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'My Games\OpenMW'
+    }
+    if ($ApplyStableSettings) { $profileArgs.ApplyStableSettings = $true }
+    if ($ImportProfilePath) { $profileArgs.ImportProfilePath = $ImportProfilePath }
+    if ($ModRoot) { $profileArgs.ModRoot = $ModRoot }
+    if ($BaseDataPath) { $profileArgs.BaseDataPath = $BaseDataPath }
+    if ($OverwritePath) { $profileArgs.OverwritePath = $OverwritePath }
+    if ($AdditionalDataPath) { $profileArgs.AdditionalDataPath = $AdditionalDataPath }
+    & (Join-Path $projectRoot 'scripts\Configure-OpenMWStableProfile.ps1') @profileArgs
+}
+
+if ($CreateDesktopShortcuts) {
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcutDefinitions = @(
+        @{
+            Name = 'OpenMW Zink DLSS5.lnk'
+            Script = 'Launch-OpenMW-Zink.cmd'
+            Icon = 'openmw.exe'
+            Description = 'Launch OpenMW through Mesa Zink, Vulkan ReShade, and DLSS 5'
+        },
+        @{
+            Name = 'OpenMW Zink DLSS5 Launcher.lnk'
+            Script = 'Launch-OpenMW-Launcher-Zink.cmd'
+            Icon = 'openmw-launcher.exe'
+            Description = 'Configure the OpenMW Zink DLSS 5 runtime'
+        }
+    )
+    foreach ($definition in $shortcutDefinitions) {
+        $shortcutPath = Join-Path $desktop $definition.Name
+        if (Test-Path -LiteralPath $shortcutPath) {
+            Copy-Item -LiteralPath $shortcutPath -Destination (Join-Path $backupRoot $definition.Name) -Force
+        }
+        $shortcut = $shell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = Join-Path $env:SystemRoot 'System32\cmd.exe'
+        $launcherPath = Join-Path $destination $definition.Script
+        $shortcut.Arguments = "/c `"`"$launcherPath`"`""
+        $shortcut.WorkingDirectory = $destination
+        $shortcut.IconLocation = "$(Join-Path $destination $definition.Icon),0"
+        $shortcut.Description = $definition.Description
+        $shortcut.Save()
+    }
+}
+
+if ($RegisterReShade) {
+    $registration = Join-Path $env:ProgramData 'ReShade\ReShadeApps.ini'
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $registration) | Out-Null
+    if (Test-Path -LiteralPath $registration) {
+        Copy-Item -LiteralPath $registration -Destination (Join-Path $backupRoot 'ReShadeApps.ini') -Force
+    }
+    [IO.File]::WriteAllText($registration, "Apps=$destinationExe`r`n", [Text.UTF8Encoding]::new($false))
+}
 
 $installedFiles = @(
     'opengl32.dll', 'libgallium_wgl.dll', 'dlss5-feed.addon64',

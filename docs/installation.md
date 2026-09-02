@@ -2,6 +2,13 @@
 
 ## Safety model
 
+The base installation changes only the isolated destination. User settings, desktop
+shortcuts, saved mod profiles, and the system ReShade Vulkan registration are changed
+only when their corresponding opt-in switches are supplied. Profile imports validate
+all referenced data directories and plugins before writing and create timestamped
+backups. `-RegisterReShade` requires elevation because its application list is stored
+under `C:\ProgramData`.
+
 The kit creates an isolated copy of OpenMW. It refuses to install directly over the
 source directory and does not copy Morrowind data. OpenMW's normal user configuration
 continues to point at the user's existing legal game data.

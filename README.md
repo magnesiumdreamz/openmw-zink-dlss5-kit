@@ -71,6 +71,36 @@ The script validates required files before writing, refuses to overwrite a non-e
 destination unless `-UpdateExisting` is supplied, and creates timestamped backups of
 replaced integration files. It never modifies the source OpenMW installation.
 
+### Optional stability and profile setup
+
+Machine-level changes are never performed by default. The following switches are
+explicitly opt-in:
+
+- `-ApplyStableSettings` disables MSAA, VSync, and the frame limiter; sets a
+  conservative 16,310-unit view distance; and enables distant-terrain object paging.
+- `-CreateDesktopShortcuts` creates game and launcher shortcuts that resolve through
+  `cmd.exe` and target the isolated runtime.
+- `-RegisterReShade` registers the destination executable in the protected ReShade
+  Vulkan application list. It requires an elevated PowerShell window and backs up the
+  previous registration.
+- `-ImportProfilePath`, together with `-ModRoot`, imports a saved OpenMW plugin and
+  groundcover profile after validating every directory and referenced plugin.
+  `-BaseDataPath`, `-OverwritePath`, and `-AdditionalDataPath` replace machine-specific
+  paths without hardcoding them in this repository.
+
+For example:
+
+```powershell
+.\scripts\Install-OpenMWDLSS5Kit.ps1 `
+  <required component parameters> `
+  -ApplyStableSettings `
+  -CreateDesktopShortcuts
+```
+
+Use `Configure-OpenMWStableProfile.ps1 -WhatIf` to preview a profile/settings change.
+OpenMW writes in-game setting changes to the normal user `settings.cfg` on graceful
+exit; the isolated runtime does not redirect or replace that file.
+
 Afterward:
 
 1. Enable the ReShade full add-on Vulkan layer for the destination `openmw.exe`.
