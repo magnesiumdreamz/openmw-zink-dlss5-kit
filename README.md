@@ -10,7 +10,7 @@ OpenMW -> OpenGL -> Mesa Zink -> Vulkan -> ReShade -> DLSS5-Feeder -> DLSS 5
 
 I built and tested this on an RTX 3090 with OpenMW 0.51.0 and NVIDIA driver 616.56.
 The same community tools are meant to support RTX 20-, 30-, 40-, and 50-series cards,
-but I have only personally confirmed the RTX 3090 setup.
+but I have only personally confirmed my own RTX 3090 setup.
 
 This is a community experiment, not an official OpenMW or NVIDIA release. NVIDIA
 officially targets DLSS 5 at RTX 50-series hardware. Running it on an older RTX card
@@ -21,7 +21,7 @@ driver or GPU to another.
 
 [Watch the OpenMW DLSS 5 video demonstration on YouTube](https://www.youtube.com/watch?v=XIfJCVSPQsg).
 
-These screenshots show the running RTX 3090 implementation in an interior scene:
+These screenshots show my running RTX 3090 implementation in an interior scene:
 
 ![OpenMW DLSS 5 interior scene with a character, candles, and an open book](docs/images/openmw-dlss5-interior-candles.png)
 
