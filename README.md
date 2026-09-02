@@ -75,15 +75,9 @@ Download or clone this repository, open its `scripts` folder, and double-click:
 Start-OpenMWDLSS5Wizard.cmd
 ```
 
-Accept the Windows administrator prompt. The wizard explains every required folder
-and option in plain language, validates paths, lets you choose automatic feeder
-building or an existing feeder, shows a final review, and displays the PowerShell
-installer's live log. It still uses `Install-OpenMWDLSS5Kit.ps1` as its backend, so
-the GUI and command-line installation have the same validation and safety checks.
-
-The wizard cannot install Morrowind or obtain proprietary RenoDX/NVIDIA runtime DLLs.
-Use the [pinned downloads page](docs/downloads.md) to collect and extract the required
-components first.
+Accept the Windows administrator prompt. The wizard cannot install Morrowind or obtain 
+proprietary RenoDX/NVIDIA runtime DLLs. Remember to use the [pinned downloads page](docs/downloads.md) 
+to collect and extract the required components first.
 
 ### Option 2: run the PowerShell backend manually
 
