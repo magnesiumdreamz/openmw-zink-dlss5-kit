@@ -15,7 +15,7 @@ but I have only personally confirmed my own RTX 3090 setup.
 This is a community experiment, not an official OpenMW or NVIDIA release. NVIDIA
 officially targets DLSS 5 at RTX 50-series hardware. Running it on an older RTX card
 through DLSS5-Feeder and RenoDX is unsupported and may behave differently from one
-driver or GPU to another. Please feel free to fork as needed. 
+driver or GPU to another. Please feel free to fork as needed.
 
 ## Demo
 
@@ -58,8 +58,8 @@ You need:
 7. The RenoDX/RHI DLSS components: `renodx-dlss5.addon64`, an authorized
    `nvngx_dlss.dll`, and `nvngx_dlssnr.dll`.
 
-[THIRD_PARTY.md](THIRD_PARTY.md) links to the relevant projects and explains why
-their files are not included here.
+[Download the pinned, validated versions](docs/downloads.md), then read
+[THIRD_PARTY.md](THIRD_PARTY.md) for licensing and redistribution notes.
 
 ## Installing the kit
 
@@ -124,7 +124,6 @@ advanced escape hatch and may introduce resolution-change crashes.
 - **Resolution changes froze or crashed:** the feeder destroyed Vulkan resources that
   were still in use. Installation now requires the validated device-idle/resize-safe
   feeder build unless the safety check is explicitly overridden.
-
 ## Starting OpenMW
 
 If you did not create desktop shortcuts, open the destination folder and use:

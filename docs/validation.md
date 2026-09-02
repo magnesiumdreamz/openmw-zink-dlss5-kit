@@ -1,5 +1,28 @@
 # Validation record
 
+## Fresh isolated repository install — 2026-09-02
+
+The installer was run into the new disposable directory
+`runtime/repo-install-functional-test` with `-SkipStableSettings`, no shortcuts,
+no profile import, and no permanent ReShade registration. Its local `openmw.cfg`
+redirected both `config` and `user-data` to a disposable `test-profile`.
+
+Results:
+
+- all 10 install-manifest hashes passed;
+- OpenMW reported `zink Vulkan 1.4 (NVIDIA GeForce RTX 3090)`;
+- ReShade compiled `vort_Motion.fx`, `DLSS5_Feed.fx`, and
+  `OpenMW_OpaquePresent.fx` from the disposable runtime;
+- the feeder opened its D3D12 session over Vulkan transport;
+- DLSS became ready at 1280x720 with reversed depth and estimated motion;
+- frames 1, 2, and 3 were delivered;
+- no sandbox OpenMW process remained afterward;
+- the system ReShade registration was restored to the installed stability runtime.
+
+The minimal test profile intentionally excluded the user's mod directories. It logged
+missing presentation assets at the menu, but this did not affect the successful
+Zink/ReShade/DLSS integration test.
+
 Date: 2026-09-01
 
 ## Validated hardware
