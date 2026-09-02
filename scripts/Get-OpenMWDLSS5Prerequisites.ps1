@@ -1,11 +1,13 @@
 [CmdletBinding()]
 param(
     [string] $CachePath = (Join-Path $env:LOCALAPPDATA 'OpenMW-DLSS5-Kit\components'),
-    [switch] $IncludeRHIInstaller
+    [switch] $IncludeRHIInstaller,
+    [switch] $AllowHashMismatch
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$script:hashWarnings = [Collections.Generic.List[string]]::new()
 
 function Get-VerifiedFile {
     param([string] $Name, [string] $Url, [string] $Sha256)
@@ -14,6 +16,11 @@ function Get-VerifiedFile {
     $target = Join-Path $downloads $Name
     if (Test-Path -LiteralPath $target -PathType Leaf) {
         if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -eq $Sha256) { return $target }
+        if ($AllowHashMismatch) {
+            $actual = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+            $script:hashWarnings.Add("UNVERIFIED ${Name}: expected $Sha256; received $actual")
+            return $target
+        }
         Remove-Item -LiteralPath $target -Force
     }
     $partial = "$target.partial"
@@ -22,8 +29,11 @@ function Get-VerifiedFile {
     if ($LASTEXITCODE -ne 0) { throw "Download failed (curl exit $LASTEXITCODE): $Url" }
     $actual = (Get-FileHash -LiteralPath $partial -Algorithm SHA256).Hash
     if ($actual -ne $Sha256) {
-        Remove-Item -LiteralPath $partial -Force
-        throw "Hash mismatch for $Name. Expected $Sha256; received $actual."
+        if (-not $AllowHashMismatch) {
+            Remove-Item -LiteralPath $partial -Force
+            throw "Hash mismatch for $Name. Expected $Sha256; received $actual."
+        }
+        $script:hashWarnings.Add("UNVERIFIED ${Name}: expected $Sha256; received $actual")
     }
     Move-Item -LiteralPath $partial -Destination $target -Force
     return $target
@@ -113,6 +123,8 @@ if ($IncludeRHIInstaller) {
         Get-VerifiedFile 'RHI-Setup-2.4.9.exe' 'https://github.com/RankFTW/RHI/releases/download/RHI-2.4.9/RHI-Setup.exe' 'C3E325CABE2C056010C9F0DC6F6A2CEFBE7E85F6EA99935BFAC573162F03E9E2'
     }
 }
+
+$result.Warnings = @($script:hashWarnings)
 
 $manifest = Join-Path $CachePath 'prerequisites.json'
 $result | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifest -Encoding UTF8

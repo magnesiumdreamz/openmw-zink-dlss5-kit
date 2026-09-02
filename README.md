@@ -81,6 +81,11 @@ and fills Mesa, ReShade shaders, VORT, and qUINT. It also downloads the verified
 installer. If any attempt fails, the affected field stays empty and the wizard explains
 what to select with **Browse**.
 
+If a server returns a file whose SHA-256 no longer matches the validated value, the
+wizard stops that component and shows both hashes. You may explicitly choose to use it
+anyway, but this is an unverified-install override and should be used only after checking
+the upstream release. The decision and mismatched hashes are shown again in the result.
+
 The wizard cannot install Morrowind or obtain proprietary RenoDX/NVIDIA runtime DLLs.
 Finish the authorized RHI workflow and browse to the folder containing those files.
 The [pinned downloads page](docs/downloads.md) remains available for manual setup.

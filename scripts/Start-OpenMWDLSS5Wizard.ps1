@@ -359,6 +359,22 @@ $timer.Add_Tick({
 $prerequisiteTimer = [Windows.Forms.Timer]::new()
 $prerequisiteTimer.Interval = 300
 $script:prerequisiteJob = $null
+$script:prerequisiteHashOverride = $false
+
+function Start-PrerequisiteDownload([bool] $AllowHashMismatch) {
+    $downloadPrerequisites.Enabled = $false
+    $script:prerequisiteHashOverride = $AllowHashMismatch
+    $prerequisiteStatus.Text = if ($AllowHashMismatch) { 'Downloading unverified replacement after your confirmation...' } else { 'Downloading and verifying requirements. This can take a few minutes...' }
+    $script:prerequisiteJob = Start-Job -ScriptBlock {
+        param($Downloader, $HashOverride)
+        $cache = Join-Path $env:LOCALAPPDATA 'OpenMW-DLSS5-Kit\components'
+        if ($HashOverride) { & $Downloader -CachePath $cache -IncludeRHIInstaller -AllowHashMismatch | Out-Null }
+        else { & $Downloader -CachePath $cache -IncludeRHIInstaller | Out-Null }
+        Join-Path $cache 'prerequisites.json'
+    } -ArgumentList $prerequisiteDownloader, $AllowHashMismatch
+    $prerequisiteTimer.Start()
+}
+
 $prerequisiteTimer.Add_Tick({
     if (-not $script:prerequisiteJob) { return }
     if ($script:prerequisiteJob.State -notin @('Completed','Failed','Stopped')) { return }
@@ -376,6 +392,18 @@ $prerequisiteTimer.Add_Tick({
         return
     }
     $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+    $hashFailures = @(@('OpenMW','Mesa','ReShadeShaders','Vort','Quint','RHIInstaller') |
+        ForEach-Object { $item = $manifest.$_; if ($item -and $item.Error -like 'Hash mismatch*') { $item } })
+    if ($hashFailures.Count -and -not $script:prerequisiteHashOverride) {
+        $details = ($hashFailures | ForEach-Object { $_.Error }) -join "`r`n`r`n"
+        $choice = [Windows.Forms.MessageBox]::Show(
+            "One or more downloads do not match the validated SHA-256 hashes.`r`n`r`n$details`r`n`r`nContinuing could install altered or corrupted code. Download and use these files anyway?",
+            'Hash verification failed', 'YesNo', 'Warning', 'Button2')
+        if ($choice -eq 'Yes') {
+            Start-PrerequisiteDownload $true
+            return
+        }
+    }
     $mapping = [ordered]@{
         OpenMW = 'OpenMWPath'
         Mesa = 'MesaPath'
@@ -394,6 +422,10 @@ $prerequisiteTimer.Add_Tick({
     } else {
         $failures.Add('RHI/RenoDX: proprietary runtime files cannot be redistributed. Download RHI from the pinned downloads page, finish its setup, then select the runtime folder with Browse.')
     }
+    $hashWarnings = @($manifest.Warnings)
+    if ($hashWarnings.Count) {
+        $failures.Insert(0, ("WARNING - you approved files with mismatched hashes:`r`n" + ($hashWarnings -join "`r`n")))
+    }
     if ($failures.Count) {
         $prerequisiteStatus.Text = 'Available open-source folders were filled. Complete the remaining Browse field(s).'
         [Windows.Forms.MessageBox]::Show(($failures -join "`r`n`r`n"), 'Some requirements still need you', 'OK', 'Information') | Out-Null
@@ -407,15 +439,7 @@ $downloadPrerequisites.Add_Click({
         [Windows.Forms.MessageBox]::Show("The downloader script is missing: $prerequisiteDownloader", 'Cannot download requirements', 'OK', 'Error') | Out-Null
         return
     }
-    $downloadPrerequisites.Enabled = $false
-    $prerequisiteStatus.Text = 'Downloading and verifying requirements. This can take a few minutes...'
-    $script:prerequisiteJob = Start-Job -ScriptBlock {
-        param($Downloader)
-        $cache = Join-Path $env:LOCALAPPDATA 'OpenMW-DLSS5-Kit\components'
-        & $Downloader -CachePath $cache -IncludeRHIInstaller | Out-Null
-        Join-Path $cache 'prerequisites.json'
-    } -ArgumentList $prerequisiteDownloader
-    $prerequisiteTimer.Start()
+    Start-PrerequisiteDownload $false
 })
 
 $installButton.Add_Click({

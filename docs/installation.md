@@ -16,6 +16,11 @@ extracts the pinned Mesa, ReShade shader, VORT, and qUINT packages into
 If a source is unavailable or verification fails, that field remains empty and the
 wizard asks you to use **Browse** instead. Re-running the step reuses verified downloads.
 
+Hash mismatches are never accepted silently. The wizard displays the expected and
+received hashes and asks whether to continue. Choosing **No** keeps the affected field
+unfilled. Choosing **Yes** enables a one-run override, records the unverified file and
+both hashes in the prerequisite manifest, and displays the warning again afterward.
+
 The same step downloads the verified RHI installer, but does not run it silently or
 obtain proprietary RenoDX/NVIDIA runtime DLLs. Complete the authorized RHI workflow,
 then browse to the folder containing the required runtime files. Morrowind itself is
