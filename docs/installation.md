@@ -1,5 +1,18 @@
 # Installation guide
 
+## Setup wizard
+
+For a guided installation, double-click
+`scripts\Start-OpenMWDLSS5Wizard.cmd`. The wizard explains each input, validates
+required folders, provides safe defaults, reviews the chosen configuration, and calls
+the same `Install-OpenMWDLSS5Kit.ps1` backend documented below. It requests Windows
+administrator permission at startup so the optional ReShade registration can be
+completed without discarding entered form data.
+
+The wizard does not download Morrowind, ReShade itself, Mesa, VORT, qUINT, or the
+proprietary RenoDX/NVIDIA runtime DLLs. Extract those authorized components first.
+Only the open-source patched-feeder build can be downloaded and compiled automatically.
+
 ## Safety model
 
 The base installation changes the isolated destination and backs up/applies the tested

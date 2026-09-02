@@ -67,9 +67,28 @@ You need:
 
 ## Installing the kit
 
-Download or clone this repository, open **PowerShell as administrator** in its folder,
-and run the following complete example. Change every example path to match your
-computer:
+### Option 1: use the setup wizard (recommended)
+
+Download or clone this repository, open its `scripts` folder, and double-click:
+
+```text
+Start-OpenMWDLSS5Wizard.cmd
+```
+
+Accept the Windows administrator prompt. The wizard explains every required folder
+and option in plain language, validates paths, lets you choose automatic feeder
+building or an existing feeder, shows a final review, and displays the PowerShell
+installer's live log. It still uses `Install-OpenMWDLSS5Kit.ps1` as its backend, so
+the GUI and command-line installation have the same validation and safety checks.
+
+The wizard cannot install Morrowind or obtain proprietary RenoDX/NVIDIA runtime DLLs.
+Use the [pinned downloads page](docs/downloads.md) to collect and extract the required
+components first.
+
+### Option 2: run the PowerShell backend manually
+
+Open **PowerShell as administrator** in the repository folder and run the following
+complete example. Change every example path to match your computer:
 
 ```powershell
 .\scripts\Install-OpenMWDLSS5Kit.ps1 `
