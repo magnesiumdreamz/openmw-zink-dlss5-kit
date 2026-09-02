@@ -111,8 +111,21 @@ Desktop shortcuts, mod import, and system ReShade registration remain opt-in.
 `-BuildPatchedFeeder` downloads the commit-pinned feeder, NVIDIA NGX SDK, Vulkan
 headers, and validated feeder shader; applies the included resize-safety patch; and
 compiles the add-on. It does not download the proprietary runtime DLLs used by
-RenoDX. If you already built the validated feeder, replace the switch with
-`-FeederPath 'C:\path\to\feeder-output'`.
+RenoDX. The generated feeder is stored by default in
+`%LOCALAPPDATA%\OpenMW-DLSS5-Kit\validated-feeder`.
+
+Do not use `-BuildPatchedFeeder` and `-FeederPath` together. If you already have the
+validated `dlss5-feed.addon64` and matching `DLSS5_Feed.fx`, replace this line:
+
+```powershell
+  -BuildPatchedFeeder `
+```
+
+with:
+
+```powershell
+  -FeederPath 'C:\path\to\feeder-output' `
+```
 
 This switch automates only the feeder build. ReShade's Vulkan layer must still be
 installed separately, and the RenoDX/NVIDIA runtime files must still be obtained
