@@ -54,7 +54,7 @@ You need:
 1. OpenMW 0.51.0 with a working, legal Morrowind installation.
 2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
 3. ReShade shader files containing `ReShade.fxh` and `ReShadeUI.fxh`. The wizard can
-   download and install the pinned full add-on Vulkan layer automatically.
+   download these and install the pinned full add-on Vulkan layer automatically.
 4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
    patch, and compile DLSS5-Feeder automatically.
 5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
@@ -75,9 +75,15 @@ Download or clone this repository, open its `scripts` folder, and double-click:
 Start-OpenMWDLSS5Wizard.cmd
 ```
 
-Accept the Windows administrator prompt. The wizard cannot install Morrowind or obtain 
-proprietary RenoDX/NVIDIA runtime DLLs. Remember to use the [pinned downloads page](docs/downloads.md) 
-to collect and extract the required components first.
+Accept the Windows administrator prompt, then click **Download and fill open-source
+requirements**. The wizard attempts to find OpenMW and downloads, hash-checks, extracts,
+and fills Mesa, ReShade shaders, VORT, and qUINT. It also downloads the verified RHI
+installer. If any attempt fails, the affected field stays empty and the wizard explains
+what to select with **Browse**.
+
+The wizard cannot install Morrowind or obtain proprietary RenoDX/NVIDIA runtime DLLs.
+Finish the authorized RHI workflow and browse to the folder containing those files.
+The [pinned downloads page](docs/downloads.md) remains available for manual setup.
 
 ### Option 2: run the PowerShell backend manually
 

@@ -4,6 +4,7 @@ param([switch] $SelfTest)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $backend = Join-Path $PSScriptRoot 'Install-OpenMWDLSS5Kit.ps1'
+$prerequisiteDownloader = Join-Path $PSScriptRoot 'Get-OpenMWDLSS5Prerequisites.ps1'
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -114,13 +115,19 @@ Add-Link $pages[0] 'Open the full installation guide' 'https://github.com/magnes
 # Required folders page
 Add-Label $pages[1] 'Choose the required folders' 24 18 760 38 $headingFont | Out-Null
 Add-Label $pages[1] 'Use extracted component folders, not ZIP files. The wizard checks these paths before installation.' 24 58 760 30 | Out-Null
-Add-FolderField $pages[1] 'OpenMWPath' 'Existing OpenMW' 'The folder containing openmw.exe. It is copied; it is not modified.' 100
-Add-FolderField $pages[1] 'DestinationPath' 'New DLSS 5 copy' 'A new or empty folder for the separate Zink/DLSS installation. You may type a folder that does not exist yet.' 170
-Add-FolderField $pages[1] 'MesaPath' 'Mesa' 'The extracted MSVC Mesa folder containing opengl32.dll and libgallium_wgl.dll.' 240
-Add-FolderField $pages[1] 'ReShadeShaderPath' 'ReShade shaders' 'The extracted reshade-shaders folder containing ReShade.fxh and ReShadeUI.fxh.' 310
-Add-FolderField $pages[1] 'VortPath' 'VORT motion shaders' 'The folder containing vort_Motion.fx, its include files, and textures.' 380
-Add-FolderField $pages[1] 'QuintPath' 'qUINT / MXAO' 'The folder containing qUINT_mxao.fx and qUINT_common.fxh.' 450
-Add-FolderField $pages[1] 'RenoDXPath' 'RHI / RenoDX files' 'The authorized folder containing renodx-dlss5.addon64, nvngx_dlss.dll, and nvngx_dlssnr.dll.' 520
+$downloadPrerequisites = [Windows.Forms.Button]::new()
+$downloadPrerequisites.Text = 'Download and fill open-source requirements'
+$downloadPrerequisites.Location = [Drawing.Point]::new(24, 92)
+$downloadPrerequisites.Size = [Drawing.Size]::new(310, 32)
+$pages[1].Controls.Add($downloadPrerequisites)
+$prerequisiteStatus = Add-Label $pages[1] 'Downloads are pinned and SHA-256 verified. Failed items remain available through Browse.' 350 95 465 36
+Add-FolderField $pages[1] 'OpenMWPath' 'Existing OpenMW' 'The folder containing openmw.exe. It is detected when installed in a standard location; it is never modified.' 140
+Add-FolderField $pages[1] 'DestinationPath' 'New DLSS 5 copy' 'A new or empty folder for the separate Zink/DLSS installation. You may type a folder that does not exist yet.' 210
+Add-FolderField $pages[1] 'MesaPath' 'Mesa' 'Downloaded and extracted automatically, or select a folder containing opengl32.dll and libgallium_wgl.dll.' 280
+Add-FolderField $pages[1] 'ReShadeShaderPath' 'ReShade shaders' 'Downloaded automatically, or select the extracted folder containing the Shaders subfolder.' 350
+Add-FolderField $pages[1] 'VortPath' 'VORT motion shaders' 'Downloaded automatically, or select the folder containing vort_Motion.fx.' 420
+Add-FolderField $pages[1] 'QuintPath' 'qUINT / MXAO' 'Downloaded automatically, or select the folder containing the Shaders subfolder and qUINT_mxao.fx.' 490
+Add-FolderField $pages[1] 'RenoDXPath' 'RHI / RenoDX files' 'Must be selected after authorized RHI setup; it must contain renodx-dlss5.addon64 and NVIDIA DLSS DLLs.' 560
 
 # Options page
 Add-Label $pages[2] 'Choose setup options' 24 18 760 38 $headingFont | Out-Null
@@ -349,6 +356,68 @@ $timer.Add_Tick({
     }
 })
 
+$prerequisiteTimer = [Windows.Forms.Timer]::new()
+$prerequisiteTimer.Interval = 300
+$script:prerequisiteJob = $null
+$prerequisiteTimer.Add_Tick({
+    if (-not $script:prerequisiteJob) { return }
+    if ($script:prerequisiteJob.State -notin @('Completed','Failed','Stopped')) { return }
+    $prerequisiteTimer.Stop()
+    $job = $script:prerequisiteJob
+    $script:prerequisiteJob = $null
+    $manifestPath = @(Receive-Job -Job $job -ErrorAction SilentlyContinue | Select-Object -Last 1)
+    $state = $job.State
+    $reason = $job.ChildJobs[0].JobStateInfo.Reason
+    Remove-Job -Job $job -Force
+    $downloadPrerequisites.Enabled = $true
+    if ($state -ne 'Completed' -or -not $manifestPath -or -not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+        $prerequisiteStatus.Text = 'Automatic download did not finish. Use Browse for the required folders.'
+        [Windows.Forms.MessageBox]::Show("The automatic prerequisite step failed.`r`n`r`n$reason`r`n`r`nUse the Browse buttons or try again after checking the network connection.", 'Requirements need attention', 'OK', 'Warning') | Out-Null
+        return
+    }
+    $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+    $mapping = [ordered]@{
+        OpenMW = 'OpenMWPath'
+        Mesa = 'MesaPath'
+        ReShadeShaders = 'ReShadeShaderPath'
+        Vort = 'VortPath'
+        Quint = 'QuintPath'
+    }
+    $failures = [Collections.Generic.List[string]]::new()
+    foreach ($property in $mapping.Keys) {
+        $item = $manifest.$property
+        if ($item.Success) { $fields[$mapping[$property]].Text = $item.Path }
+        else { $failures.Add("$property`: $($item.Error)") }
+    }
+    if ($manifest.RHIInstaller -and $manifest.RHIInstaller.Success) {
+        $failures.Add("RHI/RenoDX: the verified RHI installer was downloaded to $($manifest.RHIInstaller.Path). Run it, obtain the authorized runtime files, then select their folder with Browse.")
+    } else {
+        $failures.Add('RHI/RenoDX: proprietary runtime files cannot be redistributed. Download RHI from the pinned downloads page, finish its setup, then select the runtime folder with Browse.')
+    }
+    if ($failures.Count) {
+        $prerequisiteStatus.Text = 'Available open-source folders were filled. Complete the remaining Browse field(s).'
+        [Windows.Forms.MessageBox]::Show(($failures -join "`r`n`r`n"), 'Some requirements still need you', 'OK', 'Information') | Out-Null
+    } else {
+        $prerequisiteStatus.Text = 'Open-source requirements downloaded, verified, extracted, and filled.'
+    }
+})
+
+$downloadPrerequisites.Add_Click({
+    if (-not (Test-Path -LiteralPath $prerequisiteDownloader -PathType Leaf)) {
+        [Windows.Forms.MessageBox]::Show("The downloader script is missing: $prerequisiteDownloader", 'Cannot download requirements', 'OK', 'Error') | Out-Null
+        return
+    }
+    $downloadPrerequisites.Enabled = $false
+    $prerequisiteStatus.Text = 'Downloading and verifying requirements. This can take a few minutes...'
+    $script:prerequisiteJob = Start-Job -ScriptBlock {
+        param($Downloader)
+        $cache = Join-Path $env:LOCALAPPDATA 'OpenMW-DLSS5-Kit\components'
+        & $Downloader -CachePath $cache -IncludeRHIInstaller | Out-Null
+        Join-Path $cache 'prerequisites.json'
+    } -ArgumentList $prerequisiteDownloader
+    $prerequisiteTimer.Start()
+})
+
 $installButton.Add_Click({
     if (-not (Test-PageInputs 3)) { return }
     $parameters = Get-InstallerParameters
@@ -376,16 +445,20 @@ if ($SelfTest) {
     foreach ($name in @('BuildPatchedFeeder','ApplyStableSettings','CreateDesktopShortcuts','InstallReShadeVulkan','RegisterReShade')) {
         if (-not $defaultParameters.ContainsKey($name)) { throw "Wizard self-test did not wire default option: $name" }
     }
+    if (-not (Test-Path -LiteralPath $prerequisiteDownloader -PathType Leaf)) { throw 'Wizard prerequisite downloader is missing.' }
     $backendParameters = (Get-Command -Name $backend).Parameters.Keys
     foreach ($name in $defaultParameters.Keys) {
         if ($name -notin $backendParameters) { throw "Wizard passes an unknown backend parameter: $name" }
     }
     $timer.Dispose()
+    $prerequisiteTimer.Dispose()
     $form.Dispose()
     Write-Output 'OpenMW DLSS5 wizard self-test passed: four pages and all installer fields constructed.'
     return
 }
 [void]$form.ShowDialog()
 if ($script:installJob) { Stop-Job $script:installJob -ErrorAction SilentlyContinue; Remove-Job $script:installJob -Force -ErrorAction SilentlyContinue }
+if ($script:prerequisiteJob) { Stop-Job $script:prerequisiteJob -ErrorAction SilentlyContinue; Remove-Job $script:prerequisiteJob -Force -ErrorAction SilentlyContinue }
 $timer.Dispose()
+$prerequisiteTimer.Dispose()
 $form.Dispose()

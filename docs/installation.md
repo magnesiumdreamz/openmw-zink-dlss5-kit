@@ -9,10 +9,18 @@ the same `Install-OpenMWDLSS5Kit.ps1` backend documented below. It requests Wind
 administrator permission at startup so the optional ReShade registration can be
 completed without discarding entered form data.
 
-The wizard does not download Morrowind, Mesa, VORT, qUINT, or the proprietary
-RenoDX/NVIDIA runtime DLLs. Extract those authorized components first. It can download
-and compile the open-source patched feeder and can download, hash-check, install, and
-verify the pinned ReShade full add-on Vulkan layer.
+On the **Required folders** page, click **Download and fill open-source requirements**.
+The wizard detects OpenMW in standard install locations and downloads, verifies, and
+extracts the pinned Mesa, ReShade shader, VORT, and qUINT packages into
+`%LOCALAPPDATA%\OpenMW-DLSS5-Kit\components`. Successful paths are filled automatically.
+If a source is unavailable or verification fails, that field remains empty and the
+wizard asks you to use **Browse** instead. Re-running the step reuses verified downloads.
+
+The same step downloads the verified RHI installer, but does not run it silently or
+obtain proprietary RenoDX/NVIDIA runtime DLLs. Complete the authorized RHI workflow,
+then browse to the folder containing the required runtime files. Morrowind itself is
+never downloaded or copied by this kit. The wizard can also compile the open-source
+patched feeder and install and verify the pinned ReShade full add-on Vulkan layer.
 
 ## Safety model
 
