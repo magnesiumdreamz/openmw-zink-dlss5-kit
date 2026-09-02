@@ -17,6 +17,16 @@ officially targets DLSS 5 at RTX 50-series hardware. Running it on an older RTX 
 through DLSS5-Feeder and RenoDX is unsupported and may behave differently from one
 driver or GPU to another.
 
+## Demo
+
+[Watch the OpenMW DLSS 5 video demonstration on YouTube](https://www.youtube.com/watch?v=XIfJCVSPQsg).
+
+These screenshots show the running RTX 3090 implementation in an interior scene:
+
+![OpenMW DLSS 5 interior scene with a character, candles, and an open book](docs/images/openmw-dlss5-interior-candles.png)
+
+![OpenMW DLSS 5 interior character demonstration](docs/images/openmw-dlss5-interior-character.png)
+
 ## What this repository does
 
 The installer takes an OpenMW installation and builds a separate Zink/DLSS copy. Your
