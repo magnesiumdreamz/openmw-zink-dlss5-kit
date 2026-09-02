@@ -53,8 +53,8 @@ You need:
 
 1. OpenMW 0.51.0 with a working, legal Morrowind installation.
 2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
-3. ReShade with add-on support, installed as a Vulkan layer. You also need
-   `ReShade.fxh` and `ReShadeUI.fxh` from the ReShade shader repository.
+3. ReShade shader files containing `ReShade.fxh` and `ReShadeUI.fxh`. The wizard can
+   download and install the pinned full add-on Vulkan layer automatically.
 4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
    patch, and compile DLSS5-Feeder automatically.
 5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
@@ -97,6 +97,7 @@ complete example. Change every example path to match your computer:
   -ReShadeConfigName 'ReShade.ini' `
   -ApplyStableSettings `
   -CreateDesktopShortcuts `
+  -InstallReShadeVulkan `
   -RegisterReShade `
   -ImportProfilePath 'C:\Backups\OpenMW-profile' `
   -ModRoot 'C:\Games\Morrowind-Mods\mods' `
@@ -111,7 +112,8 @@ complete example. Change every example path to match your computer:
 If you do not have a saved OpenMW mod profile, remove `-ImportProfilePath`, `-ModRoot`,
 `-BaseDataPath`, `-OverwritePath`, and `-AdditionalDataPath`. The remaining command
 still performs the complete normal setup: stable settings, feeder build, shortcuts,
-and ReShade registration. Administrator mode is needed only for `-RegisterReShade`.
+ReShade Vulkan-layer installation, and registration. Administrator mode is needed for
+the two ReShade system operations.
 
 The installer checks that the files it needs are present before it writes the runtime.
 It will not overwrite a non-empty destination unless you add `-UpdateExisting`, and
@@ -119,7 +121,8 @@ it backs up integration files that it replaces.
 
 By default, the installer also backs up and applies the tested OpenMW stability
 settings. Add `-SkipStableSettings` to leave your user `settings.cfg` unchanged.
-Desktop shortcuts, mod import, and system ReShade registration remain opt-in.
+Desktop shortcuts, mod import, Vulkan-layer installation, and system ReShade
+registration remain opt-in.
 
 `-BuildPatchedFeeder` downloads the commit-pinned feeder, NVIDIA NGX SDK, Vulkan
 headers, and validated feeder shader; applies the included resize-safety patch; and
@@ -140,9 +143,10 @@ with:
   -FeederPath 'C:\path\to\feeder-output' `
 ```
 
-This switch automates only the feeder build. ReShade's Vulkan layer must still be
-installed separately, and the RenoDX/NVIDIA runtime files must still be obtained
-through an authorized RHI workflow and supplied with `-RenoDXPath`.
+This switch automates only the feeder build. Use `-InstallReShadeVulkan` to download,
+hash-check, install, and verify the pinned ReShade 6.8.0 full add-on Vulkan layer.
+The RenoDX/NVIDIA runtime files must still be obtained through an authorized RHI
+workflow and supplied with `-RenoDXPath`.
 
 ## Recommended setup options
 
@@ -150,6 +154,10 @@ The stable settings disable MSAA, VSync, and the frame limiter, use a 16,310-uni
 distance, and enable object paging. The following additional options are opt-in:
 
 - `-CreateDesktopShortcuts` adds shortcuts for the game and OpenMW Launcher.
+- `-InstallReShadeVulkan` installs the pinned ReShade 6.8.0 full add-on Vulkan layer
+  if a working 64-bit layer is not already registered. It implies `-RegisterReShade`.
+- `-ReShadeSetupPath` uses a previously downloaded, hash-matching ReShade installer
+  instead of downloading it to the kit cache.
 - `-RegisterReShade` points the system ReShade Vulkan layer at the new `openmw.exe`.
   This option requires PowerShell to be run as administrator and backs up the previous
   registration.

@@ -106,7 +106,7 @@ function Add-FolderField($Parent, [string] $Key, [string] $Title, [string] $Help
 Add-Label $pages[0] 'OpenMW Zink DLSS 5 Setup' 28 24 760 42 $headingFont | Out-Null
 Add-Label $pages[0] 'This wizard creates a separate experimental OpenMW copy. It does not replace your normal OpenMW folder or include Morrowind game files.' 28 78 770 50 | Out-Null
 Add-Label $pages[0] 'Before continuing, install or collect:' 28 140 760 28 $subheadingFont | Out-Null
-Add-Label $pages[0] "1. A working OpenMW 0.51.0 installation connected to a legal copy of Morrowind.`r`n2. Mesa for Windows, ReShade shader files, VORT shaders, qUINT, and authorized RHI/RenoDX files.`r`n3. ReShade 6.8.0 full add-on build installed for Vulkan.`r`n4. Git for Windows and Visual Studio 2022 Build Tools with Desktop development with C++.`r`n5. An NVIDIA RTX GPU and a current driver. This project is verified only on an RTX 3090." 42 178 760 130 | Out-Null
+Add-Label $pages[0] "1. A working OpenMW 0.51.0 installation connected to a legal copy of Morrowind.`r`n2. Mesa for Windows, ReShade shader files, VORT shaders, qUINT, and authorized RHI/RenoDX files.`r`n3. Git for Windows and Visual Studio 2022 Build Tools with Desktop development with C++.`r`n4. An NVIDIA RTX GPU and a current driver. This project is verified only on an RTX 3090.`r`n5. ReShade may already be installed, or the wizard can download and install its pinned Vulkan layer." 42 178 760 130 | Out-Null
 Add-Label $pages[0] 'The automatic feeder option downloads source code and builds the patched feeder locally. It cannot download proprietary RenoDX/NVIDIA runtime DLLs.' 28 320 770 52 | Out-Null
 Add-Link $pages[0] 'Open the pinned downloads page' 'https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/blob/main/docs/downloads.md' 28 390 330
 Add-Link $pages[0] 'Open the full installation guide' 'https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/blob/main/docs/installation.md' 28 424 330
@@ -148,45 +148,58 @@ $stableSettings.Checked = $true
 $pages[2].Controls.Add($stableSettings)
 Add-Label $pages[2] 'Disables MSAA, VSync, and the frame limiter; enables stable object paging and a moderate view distance. Existing settings are backed up.' 48 274 730 40 | Out-Null
 
+$installLayer = [Windows.Forms.CheckBox]::new()
+$installLayer.Text = 'Download, install, and verify the ReShade Vulkan layer (recommended)'
+$installLayer.Location = [Drawing.Point]::new(28, 322)
+$installLayer.Size = [Drawing.Size]::new(620, 26)
+$installLayer.Checked = $true
+$pages[2].Controls.Add($installLayer)
+Add-Label $pages[2] 'Uses the pinned ReShade 6.8.0 full add-on installer, verifies its SHA-256, installs the system Vulkan layer, and verifies the registry entry.' 48 351 730 40 | Out-Null
+
 $shortcuts = [Windows.Forms.CheckBox]::new()
 $shortcuts.Text = 'Create Desktop shortcuts for the game and launcher'
-$shortcuts.Location = [Drawing.Point]::new(28, 322)
+$shortcuts.Location = [Drawing.Point]::new(28, 400)
 $shortcuts.Size = [Drawing.Size]::new(470, 26)
 $shortcuts.Checked = $true
 $pages[2].Controls.Add($shortcuts)
 $registerReShade = [Windows.Forms.CheckBox]::new()
 $registerReShade.Text = 'Register this copy with the installed ReShade Vulkan layer'
-$registerReShade.Location = [Drawing.Point]::new(28, 356)
+$registerReShade.Location = [Drawing.Point]::new(28, 434)
 $registerReShade.Size = [Drawing.Size]::new(520, 26)
 $registerReShade.Checked = $true
+$registerReShade.Enabled = $false
 $pages[2].Controls.Add($registerReShade)
-Add-Label $pages[2] 'This points ReShade at the new openmw.exe and backs up the previous registration. ReShade itself must already be installed.' 48 385 730 40 | Out-Null
+Add-Label $pages[2] 'This limits the installed Vulkan layer to the new openmw.exe and backs up the previous registration. It is required when installing the layer above.' 48 463 730 40 | Out-Null
+$installLayer.Add_CheckedChanged({
+    if ($installLayer.Checked) { $registerReShade.Checked = $true; $registerReShade.Enabled = $false }
+    else { $registerReShade.Enabled = $true }
+})
 
-Add-Label $pages[2] 'ReShade settings filename' 28 435 210 24 $subheadingFont | Out-Null
+Add-Label $pages[2] 'ReShade settings filename' 28 513 210 24 $subheadingFont | Out-Null
 $reshadeConfig = [Windows.Forms.ComboBox]::new()
 $reshadeConfig.DropDownStyle = 'DropDownList'
 $reshadeConfig.Items.AddRange(@('ReShade.ini', 'ReShade2.ini', 'ReShade3.ini'))
 $reshadeConfig.SelectedIndex = 0
-$reshadeConfig.Location = [Drawing.Point]::new(245, 432)
+$reshadeConfig.Location = [Drawing.Point]::new(245, 510)
 $reshadeConfig.Size = [Drawing.Size]::new(180, 26)
 $pages[2].Controls.Add($reshadeConfig)
-Add-Label $pages[2] 'Leave this at ReShade.ini unless your existing Vulkan setup explicitly uses a numbered file.' 28 465 730 36 | Out-Null
+Add-Label $pages[2] 'Leave this at ReShade.ini unless your existing Vulkan setup explicitly uses a numbered file.' 28 543 730 36 | Out-Null
 
 $importProfile = [Windows.Forms.CheckBox]::new()
 $importProfile.Text = 'Import an existing OpenMW mod and groundcover profile (advanced)'
-$importProfile.Location = [Drawing.Point]::new(28, 515)
+$importProfile.Location = [Drawing.Point]::new(28, 593)
 $importProfile.Size = [Drawing.Size]::new(590, 26)
 $pages[2].Controls.Add($importProfile)
-Add-Label $pages[2] 'Enable this only when moving a saved openmw.cfg/settings.cfg profile to known mod folders. Every referenced plugin is validated first.' 48 544 730 42 | Out-Null
-Add-FolderField $pages[2] 'ImportProfilePath' 'Saved profile' 'Folder containing the source openmw.cfg and settings.cfg.' 600
-Add-FolderField $pages[2] 'ModRoot' 'Mod root' 'Folder whose immediate subfolders correspond to mod entries in the saved profile.' 670
-Add-FolderField $pages[2] 'BaseDataPath' 'Morrowind data' 'Your legal Morrowind Data Files folder. Optional when the saved profile already contains a valid path.' 740
-Add-FolderField $pages[2] 'OverwritePath' 'Overwrite folder' 'Optional mod-manager overwrite directory.' 810
-Add-Label $pages[2] 'Other data folders (one full folder path per line)' 24 885 500 24 $subheadingFont | Out-Null
+Add-Label $pages[2] 'Enable this only when moving a saved openmw.cfg/settings.cfg profile to known mod folders. Every referenced plugin is validated first.' 48 622 730 42 | Out-Null
+Add-FolderField $pages[2] 'ImportProfilePath' 'Saved profile' 'Folder containing the source openmw.cfg and settings.cfg.' 680
+Add-FolderField $pages[2] 'ModRoot' 'Mod root' 'Folder whose immediate subfolders correspond to mod entries in the saved profile.' 750
+Add-FolderField $pages[2] 'BaseDataPath' 'Morrowind data' 'Your legal Morrowind Data Files folder. Optional when the saved profile already contains a valid path.' 820
+Add-FolderField $pages[2] 'OverwritePath' 'Overwrite folder' 'Optional mod-manager overwrite directory.' 890
+Add-Label $pages[2] 'Other data folders (one full folder path per line)' 24 965 500 24 $subheadingFont | Out-Null
 $additionalPaths = [Windows.Forms.TextBox]::new()
 $additionalPaths.Multiline = $true
 $additionalPaths.ScrollBars = 'Vertical'
-$additionalPaths.Location = [Drawing.Point]::new(24, 915)
+$additionalPaths.Location = [Drawing.Point]::new(24, 995)
 $additionalPaths.Size = [Drawing.Size]::new(790, 90)
 $pages[2].Controls.Add($additionalPaths)
 $profileControls = @($fields.ImportProfilePath, $fields.ModRoot, $fields.BaseDataPath, $fields.OverwritePath, $additionalPaths)
@@ -251,6 +264,7 @@ function Get-InstallerParameters {
     if ($stableSettings.Checked) { $parameters.ApplyStableSettings = $true }
     else { $parameters.SkipStableSettings = $true }
     if ($shortcuts.Checked) { $parameters.CreateDesktopShortcuts = $true }
+    if ($installLayer.Checked) { $parameters.InstallReShadeVulkan = $true }
     if ($registerReShade.Checked) { $parameters.RegisterReShade = $true }
     if ($importProfile.Checked) {
         $parameters.ImportProfilePath = $fields.ImportProfilePath.Text.Trim()
@@ -293,6 +307,7 @@ function Update-Review {
         "Feeder:           $(if ($autoFeeder.Checked) {'download, patch, and build automatically'} else {$p.FeederPath})",
         "Stable settings:  $($stableSettings.Checked)",
         "Desktop shortcuts:$($shortcuts.Checked)",
+        "Install Vulkan layer:$($installLayer.Checked)",
         "Register ReShade: $($registerReShade.Checked)",
         "Import mod profile:$($importProfile.Checked)"
     )
@@ -358,7 +373,7 @@ if ($SelfTest) {
     }
     if ($tabs.TabCount -ne 4) { throw "Wizard self-test expected four pages, found $($tabs.TabCount)." }
     $defaultParameters = Get-InstallerParameters
-    foreach ($name in @('BuildPatchedFeeder','ApplyStableSettings','CreateDesktopShortcuts','RegisterReShade')) {
+    foreach ($name in @('BuildPatchedFeeder','ApplyStableSettings','CreateDesktopShortcuts','InstallReShadeVulkan','RegisterReShade')) {
         if (-not $defaultParameters.ContainsKey($name)) { throw "Wizard self-test did not wire default option: $name" }
     }
     $backendParameters = (Get-Command -Name $backend).Parameters.Keys

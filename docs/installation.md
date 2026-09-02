@@ -9,9 +9,10 @@ the same `Install-OpenMWDLSS5Kit.ps1` backend documented below. It requests Wind
 administrator permission at startup so the optional ReShade registration can be
 completed without discarding entered form data.
 
-The wizard does not download Morrowind, ReShade itself, Mesa, VORT, qUINT, or the
-proprietary RenoDX/NVIDIA runtime DLLs. Extract those authorized components first.
-Only the open-source patched-feeder build can be downloaded and compiled automatically.
+The wizard does not download Morrowind, Mesa, VORT, qUINT, or the proprietary
+RenoDX/NVIDIA runtime DLLs. Extract those authorized components first. It can download
+and compile the open-source patched feeder and can download, hash-check, install, and
+verify the pinned ReShade full add-on Vulkan layer.
 
 ## Safety model
 
@@ -27,9 +28,12 @@ The kit creates an isolated copy of OpenMW. It refuses to install directly over 
 source directory and does not copy Morrowind data. OpenMW's normal user configuration
 continues to point at the user's existing legal game data.
 
-The installer does not install ReShade's system Vulkan layer because that operation
-changes machine-wide Vulkan configuration. Install ReShade with full add-on support
-separately and scope it to the isolated `openmw.exe` when the installer permits it.
+Installing ReShade's Vulkan layer changes machine-wide Vulkan configuration and
+therefore remains an explicit option. The wizard enables it by default and explains
+the change. On the command line, use `-InstallReShadeVulkan`; this downloads the pinned
+full add-on setup unless `-ReShadeSetupPath` is supplied, verifies its SHA-256, invokes
+ReShade's supported headless Vulkan setup, and verifies the installed manifest, DLL,
+and HKLM registration. It also registers only the isolated `openmw.exe`.
 
 ## Prepare component directories
 
@@ -69,9 +73,11 @@ the default `ReShade.ini`.
 
 ## ReShade Vulkan setup
 
-Install the full add-on build of ReShade for Vulkan and allow it to load add-ons.
-Avoid enabling the layer globally for unrelated applications where possible. The kit
-does not include or install ReShade itself.
+Use the wizard's **Download, install, and verify the ReShade Vulkan layer** option, or
+pass `-InstallReShadeVulkan` to the backend. If a working 64-bit layer is already
+installed, the helper leaves it in place. Otherwise it uses the pinned ReShade 6.8.0
+full add-on setup. Application registration restricts loading to the generated OpenMW
+executable rather than enabling ReShade for unrelated Vulkan applications.
 
 At first launch, ReShade should compile only:
 

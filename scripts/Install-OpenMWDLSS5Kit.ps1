@@ -23,6 +23,8 @@ param(
     [string] $OverwritePath,
     [string[]] $AdditionalDataPath,
     [switch] $CreateDesktopShortcuts,
+    [switch] $InstallReShadeVulkan,
+    [string] $ReShadeSetupPath,
     [switch] $RegisterReShade
 )
 
@@ -134,6 +136,7 @@ if ($runningDestination.Count -gt 0) {
     throw "Close the destination OpenMW process before installing or updating: $destinationExe"
 }
 
+if ($InstallReShadeVulkan) { $RegisterReShade = $true }
 if ($RegisterReShade) {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = [Security.Principal.WindowsPrincipal]::new($identity)
@@ -147,6 +150,13 @@ if (-not $PSCmdlet.ShouldProcess($destination, 'Build isolated OpenMW Zink DLSS5
 if (-not $destinationExists) { New-Item -ItemType Directory -Path $destination | Out-Null }
 if (-not (Test-Path -LiteralPath (Join-Path $destination 'openmw.exe'))) {
     Get-ChildItem -LiteralPath $openmw -Force | Copy-Item -Destination $destination -Recurse -Force
+}
+
+if ($InstallReShadeVulkan) {
+    $layerArguments = @{ TargetExecutable = $destinationExe }
+    if ($ReShadeSetupPath) { $layerArguments.SetupPath = $ReShadeSetupPath }
+    else { $layerArguments.DownloadSetup = $true }
+    & (Join-Path $PSScriptRoot 'Install-ReShadeVulkanLayer.ps1') @layerArguments
 }
 
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
