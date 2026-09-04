@@ -30,10 +30,7 @@ patch and its matching shader. It also obtains the hash-checked **RenoDX 4.70**
 add-on from RHI's release repository, unless you already supplied that exact file.
 Your NVIDIA DLLs remain separate inputs; the installer does not update them automatically.
 
-This combination rendered NR successfully on the RTX 3090 without a crash in the
-latest short test, but Windows still recorded **8 NVIDIA Event 153 errors**.
-Hook and shutdown-resource warnings also remain. This is not an error-free or
-long-session stability claim. See [test results and limitations](docs/september-4-update.md).
+See [test results and limitations](docs/september-4-update.md).
 
 ## Optional: HBAO + VAIO shader wizard
 
@@ -68,24 +65,6 @@ original OpenMW folder is left alone. The kit adds:
 It does **not** include Morrowind, OpenMW, ReShade, Mesa, NVIDIA DLLs, or the other
 third-party binaries. Those files have their own licenses and must be downloaded from
 their original or otherwise authorized sources.
-
-## Before you start
-
-You need:
-
-1. OpenMW 0.51.0 with a working, legal Morrowind installation.
-2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
-3. ReShade shader files containing `ReShade.fxh` and `ReShadeUI.fxh`. The wizard can
-   download these and install the pinned full add-on Vulkan layer automatically.
-4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
-   patch, and compile DLSS5-Feeder automatically.
-5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
-6. qUINT MXAO, including `qUINT_mxao.fx` and `qUINT_common.fxh`.
-7. The RenoDX/RHI DLSS components: `renodx-dlss5.addon64`, an authorized
-   `nvngx_dlss.dll`, and `nvngx_dlssnr.dll`.
-
-[Download the pinned, validated versions](docs/downloads.md), then read
-[THIRD_PARTY.md](THIRD_PARTY.md) for licensing and redistribution notes.
 
 ## Installing the kit
 
@@ -183,6 +162,24 @@ hash-check, install, and verify the pinned ReShade 6.8.0 full add-on Vulkan laye
 The NVIDIA runtime files must still be obtained through an authorized RHI workflow
 and supplied with `-RenoDXPath`. The RenoDX 4.70 add-on is selected by hash from that
 folder or downloaded automatically; older add-ons are not silently reused.
+
+## Required Files
+
+Either installed automatically or needs to be downloaded separately.
+
+1. OpenMW 0.51.0 with a working, legal Morrowind installation.
+2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
+3. ReShade shader files containing `ReShade.fxh` and `ReShadeUI.fxh`. The wizard can
+   download these and install the pinned full add-on Vulkan layer automatically.
+4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
+   patch, and compile DLSS5-Feeder automatically.
+5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
+6. qUINT MXAO, including `qUINT_mxao.fx` and `qUINT_common.fxh`.
+7. The RenoDX/RHI DLSS components: `renodx-dlss5.addon64`, an authorized
+   `nvngx_dlss.dll`, and `nvngx_dlssnr.dll`.
+
+[Download the pinned, validated versions](docs/downloads.md), then read
+[THIRD_PARTY.md](THIRD_PARTY.md) for licensing and redistribution notes.
 
 ## Recommended setup options
 
