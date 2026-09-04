@@ -1,4 +1,4 @@
-# September 4 component update (unreleased)
+# September 4 component update (v0.1.8)
 
 The repository now reproduces the latest working NR configuration, not a claim
 that all underlying driver issues are fixed.

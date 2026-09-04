@@ -20,6 +20,9 @@ driver or GPU to another. Please feel free to fork as needed.
 [Download the latest release](https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/releases/latest)
 or clone `main`. Unreleased repository changes may be newer than the release archive.
 
+[v0.1.8 release notes](docs/releases/v0.1.8.md) cover the updated NR components,
+optional Rafael shader patcher, validation, and remaining stability limitations.
+
 ### Current component update
 
 The installer now builds **DLSS5-Feeder v0.12.1-beta.2** with our Vulkan resize
