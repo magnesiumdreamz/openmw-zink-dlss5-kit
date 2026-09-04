@@ -32,6 +32,14 @@ latest short test, but Windows still recorded **8 NVIDIA Event 153 errors**.
 Hook and shutdown-resource warnings also remain. This is not an error-free or
 long-session stability claim. See [test results and limitations](docs/september-4-update.md).
 
+## Optional: HBAO + VAIO shader wizard
+
+Already using Rafael's Shader Pack? Run **`scripts/Start-PostProcessingWizard.cmd`**
+to apply the optional HBAO/VAIO compatibility patch or restore its backups.
+It preserves your settings and refuses unsupported shader versions. Both effects
+compiled in our test, but a fix for driver hangs is **not yet confirmed**.
+See [setup, supported files, and rollback](docs/postprocessing-compatibility.md).
+
 ## Demo
 
 [Watch the OpenMW DLSS 5 video demonstration on YouTube](https://www.youtube.com/watch?v=XIfJCVSPQsg).

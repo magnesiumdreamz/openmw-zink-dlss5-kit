@@ -13,6 +13,7 @@ license separately.
 | VORT shaders | [Pinned commit archive](https://github.com/Vortigern11/vort_Shaders/archive/b410b9f0c0fbb83c8cb42164aaf1655fab386f4a.zip) | No |
 | qUINT/MXAO | [Pinned commit archive](https://github.com/martymcmodding/qUINT/archive/98fed77b26669202027f575a6d8f590426c21ebd.zip) | No |
 | RHI | [Pinned 2.4.9 installer](https://github.com/RankFTW/RHI/releases/download/RHI-2.4.9/RHI-Setup.exe) | No |
+| Rafael's Shader Pack (optional) | [Author's download page](https://www.nexusmods.com/morrowind/mods/53667) | Patcher with adapted snippets only; GPL v3 license in docs/licenses |
 | NVIDIA DLSS build SDK | [Pinned NVIDIA/DLSS source](https://github.com/NVIDIA/DLSS/archive/a291cc7d2cc642a51566f3dfd5376f635cd1b284.zip) and authorized RHI workflow | No |
 | Vulkan-Headers | [Pinned Khronos source](https://github.com/KhronosGroup/Vulkan-Headers/archive/31386378257ac8653ce5b32c93baec385259ebbe.zip) | No |
 | Lossless Scaling (optional) | [Official site](https://losslessscaling.com/) | No |

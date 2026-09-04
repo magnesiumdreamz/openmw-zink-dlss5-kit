@@ -1,5 +1,14 @@
 # Validation record
 
+## Optional HBAO/VAIO patcher — September 4
+
+The user confirmed both corrected shaders compile in OpenMW. The patcher reproduces
+their normalized hashes exactly. Windows PowerShell 5.1 fixture tests passed dry run,
+idempotence, byte-exact restore, unsupported-file rejection without writes, and the
+declaration-first VAIO header regression check. WinForms controls were instantiated
+successfully in a smoke test; interactive visual layout has not been independently
+verified. Long-session stability and elimination of driver errors remain unverified.
+
 ## September 4 component update
 
 See [current test results and remaining errors](september-4-update.md). The records
