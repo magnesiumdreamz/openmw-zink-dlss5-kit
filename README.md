@@ -163,7 +163,7 @@ The NVIDIA runtime files must still be obtained through an authorized RHI workfl
 and supplied with `-RenoDXPath`. The RenoDX 4.70 add-on is selected by hash from that
 folder or downloaded automatically; older add-ons are not silently reused.
 
-# Recommended setup options
+### Recommended setup options
 
 The stable settings disable MSAA, VSync, and the frame limiter, use a 16,310-unit view
 distance, and enable object paging. The following additional options are opt-in:
