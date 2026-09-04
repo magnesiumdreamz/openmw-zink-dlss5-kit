@@ -56,10 +56,9 @@ original OpenMW folder is left alone. The kit adds:
 
 - Mesa Zink, which translates OpenGL to Vulkan;
 - launchers for OpenMW and the OpenMW Launcher;
-- the ReShade configuration used by the working RTX 3090 setup;
+- the ReShade configuration used by my working setup;
 - DLSS5-Feeder configuration and stable shader order;
 - fixes for transparent windows and white/grey presentation glitches;
-- optional MXAO and depth-debugging presets;
 - an optional stable-settings and mod-profile setup tool.
 
 It does **not** include Morrowind, OpenMW, ReShade, Mesa, NVIDIA DLLs, or the other
