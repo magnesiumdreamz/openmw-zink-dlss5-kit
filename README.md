@@ -163,25 +163,7 @@ The NVIDIA runtime files must still be obtained through an authorized RHI workfl
 and supplied with `-RenoDXPath`. The RenoDX 4.70 add-on is selected by hash from that
 folder or downloaded automatically; older add-ons are not silently reused.
 
-## Required Files
-
-Either installed automatically or needs to be downloaded separately.
-
-1. OpenMW 0.51.0 with a working, legal Morrowind installation.
-2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
-3. ReShade shader files containing `ReShade.fxh` and `ReShadeUI.fxh`. The wizard can
-   download these and install the pinned full add-on Vulkan layer automatically.
-4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
-   patch, and compile DLSS5-Feeder automatically.
-5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
-6. qUINT MXAO, including `qUINT_mxao.fx` and `qUINT_common.fxh`.
-7. The RenoDX/RHI DLSS components: `renodx-dlss5.addon64`, an authorized
-   `nvngx_dlss.dll`, and `nvngx_dlssnr.dll`.
-
-[Download the pinned, validated versions](docs/downloads.md), then read
-[THIRD_PARTY.md](THIRD_PARTY.md) for licensing and redistribution notes.
-
-## Recommended setup options
+# Recommended setup options
 
 The stable settings disable MSAA, VSync, and the frame limiter, use a 16,310-unit view
 distance, and enable object paging. The following additional options are opt-in:
@@ -206,6 +188,24 @@ The installer accepts either the tested patched v0.12.1-beta.2 feeder binary or 
 feeder produced from the pinned source and patch by `-BuildPatchedFeeder`. An unknown
 external binary stops installation before anything is written. `-AllowUnvalidatedFeeder`
 is an advanced escape hatch and may introduce resolution-change crashes.
+
+## Required Files
+
+Either installed automatically or needs to be downloaded separately.
+
+1. OpenMW 0.51.0 with a working, legal Morrowind installation.
+2. A 64-bit MSVC Mesa package containing `opengl32.dll` and `libgallium_wgl.dll`.
+3. ReShade shader files containing `ReShade.fxh` and `ReShadeUI.fxh`. The wizard can
+   download these and install the pinned full add-on Vulkan layer automatically.
+4. Git for Windows and the Visual Studio C++ Build Tools. The installer can download,
+   patch, and compile DLSS5-Feeder automatically.
+5. VORT motion estimation, including `vort_Motion.fx`, its includes, and textures.
+6. qUINT MXAO, including `qUINT_mxao.fx` and `qUINT_common.fxh`.
+7. The RenoDX/RHI DLSS components: `renodx-dlss5.addon64`, an authorized
+   `nvngx_dlss.dll`, and `nvngx_dlssnr.dll`.
+
+[Download the pinned, validated versions](docs/downloads.md), then read
+[THIRD_PARTY.md](THIRD_PARTY.md) for licensing and redistribution notes.
 
 ## Problems encountered while building this
 
