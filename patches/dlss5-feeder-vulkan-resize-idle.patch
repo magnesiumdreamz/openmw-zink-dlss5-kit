@@ -2,13 +2,12 @@ diff --git a/src/dlss5-feed.cpp b/src/dlss5-feed.cpp
 index 42ce16e..a5a3096 100644
 --- a/src/dlss5-feed.cpp
 +++ b/src/dlss5-feed.cpp
-@@ -972,6 +972,14 @@ static void Barrier(ID3D12Resource *res, D3D12_RESOURCE_STATES from, D3D12_RESOU
+@@ -2316,6 +2316,13 @@
  static void ReleaseFrameResources()
  {
      DrainGpu();
-+    // The final copy back to the game is submitted on its Vulkan queue after
-+    // the private D3D12 work completes. Draining only the D3D12 queue therefore
-+    // does not make imported VkImages safe to destroy during a live resize.
++    // OpenMW: D3D12 completion alone does not retire the Vulkan copy-back.
++    // Preserve the validated resize fix before destroying imported resources.
 +    if (g.vk.ok && g.vk.DeviceWaitIdle != nullptr)
 +    {
 +        const VkResult idle = g.vk.DeviceWaitIdle(g.vk.dev);
@@ -21,19 +20,13 @@ diff --git a/src/feed_vk.h b/src/feed_vk.h
 index f90a505..8be932b 100644
 --- a/src/feed_vk.h
 +++ b/src/feed_vk.h
-@@ -36,6 +36,7 @@ struct FeedVk
+@@ -78,3 +78,4 @@ struct FeedVk
      PFN_vkCmdPipelineBarrier          CmdPipelineBarrier;
      PFN_vkCmdCopyImage                CmdCopyImage;
      PFN_vkCmdBlitImage                CmdBlitImage;
 +    PFN_vkDeviceWaitIdle              DeviceWaitIdle;
- 
-     bool ok;
- };
-@@ -67,6 +68,7 @@ static bool FeedVkLoad(FeedVk *vk, VkDevice device)
+@@ -126,3 +127,4 @@ static bool FeedVkLoad(FeedVk *vk, VkDevice device)
      FEED_VK_GET(CmdPipelineBarrier,          "vkCmdPipelineBarrier")
      FEED_VK_GET(CmdCopyImage,                "vkCmdCopyImage")
      FEED_VK_GET(CmdBlitImage,                "vkCmdBlitImage")
 +    FEED_VK_GET(DeviceWaitIdle,              "vkDeviceWaitIdle")
-     #undef FEED_VK_GET
- 
-     vk->ok = true;

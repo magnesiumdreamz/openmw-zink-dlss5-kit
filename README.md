@@ -18,7 +18,19 @@ through DLSS5-Feeder and RenoDX is unsupported and may behave differently from o
 driver or GPU to another. Please feel free to fork as needed.
 
 [Download the latest release](https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/releases/latest)
-or clone `main` for the same tested installer files.
+or clone `main`. Unreleased repository changes may be newer than the release archive.
+
+### Current component update
+
+The installer now builds **DLSS5-Feeder v0.12.1-beta.2** with our Vulkan resize
+patch and its matching shader. It also obtains the hash-checked **RenoDX 4.70**
+add-on from RHI's release repository, unless you already supplied that exact file.
+Your NVIDIA DLLs remain separate inputs; the installer does not update them automatically.
+
+This combination rendered NR successfully on the RTX 3090 without a crash in the
+latest short test, but Windows still recorded **8 NVIDIA Event 153 errors**.
+Hook and shutdown-resource warnings also remain. This is not an error-free or
+long-session stability claim. See [test results and limitations](docs/september-4-update.md).
 
 ## Demo
 
@@ -86,7 +98,9 @@ wizard stops that component and shows both hashes. You may explicitly choose to 
 anyway, but this is an unverified-install override and should be used only after checking
 the upstream release. The decision and mismatched hashes are shown again in the result.
 
-The wizard cannot install Morrowind or obtain proprietary RenoDX/NVIDIA runtime DLLs.
+The wizard cannot install Morrowind or obtain NVIDIA runtime DLLs. The backend can
+download the pinned RenoDX 4.70 add-on; if that fails, supply the extracted add-on
+in your RHI/RenoDX folder and retry. [Direct download and hashes](docs/downloads.md).
 Finish the authorized RHI workflow and browse to the folder containing those files.
 The [pinned downloads page](docs/downloads.md) remains available for manual setup.
 
@@ -156,8 +170,9 @@ with:
 
 This switch automates only the feeder build. Use `-InstallReShadeVulkan` to download,
 hash-check, install, and verify the pinned ReShade 6.8.0 full add-on Vulkan layer.
-The RenoDX/NVIDIA runtime files must still be obtained through an authorized RHI
-workflow and supplied with `-RenoDXPath`.
+The NVIDIA runtime files must still be obtained through an authorized RHI workflow
+and supplied with `-RenoDXPath`. The RenoDX 4.70 add-on is selected by hash from that
+folder or downloaded automatically; older add-ons are not silently reused.
 
 ## Recommended setup options
 
@@ -180,7 +195,7 @@ distance, and enable object paging. The following additional options are opt-in:
 Profile and settings changes receive timestamped backups. You can preview the profile
 tool without writing anything by running `Configure-OpenMWStableProfile.ps1 -WhatIf`.
 
-The installer accepts either the previously tested resize-safe feeder binary or a
+The installer accepts either the tested patched v0.12.1-beta.2 feeder binary or a
 feeder produced from the pinned source and patch by `-BuildPatchedFeeder`. An unknown
 external binary stops installation before anything is written. `-AllowUnvalidatedFeeder`
 is an advanced escape hatch and may introduce resolution-change crashes.

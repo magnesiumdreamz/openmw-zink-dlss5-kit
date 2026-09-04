@@ -1,7 +1,9 @@
 # Building the patched DLSS5-Feeder
 
-The live-resize fix was developed against DLSS5-Feeder commit
-`7c58e39e55e03f971da7d0002c837eed7d21a243`.
+The live-resize fix is now carried forward to DLSS5-Feeder v0.12.1-beta.2,
+commit `b4e92bb6c8bfa73c3bfa63decfb083863f48a192`.
+The helper uses the shader from that source, normalizes its line endings to match
+the release package, and verifies both source and packaged shader hashes.
 
 The normal installation path is automatic. Install Git for Windows and Visual Studio
 2022 Build Tools with **Desktop development with C++**, then pass this switch to the
@@ -29,8 +31,8 @@ To build it separately for inspection:
 
 The build still requires an installed MSVC C++ toolchain and Windows SDK. Source and
 header dependencies are downloaded from the exact links in `downloads.md`; proprietary
-RenoDX runtime DLLs are not part of this compilation and remain a separate authorized
-input to the main installer.
+NVIDIA runtime DLLs are not part of this compilation and remain separate authorized
+inputs to the main installer. Its separate RenoDX helper obtains the tested 4.70 add-on.
 
 Before building, check whether a newer upstream release has incorporated an equivalent
 Vulkan idle wait. Do not apply the patch twice. A clean build should contain only the

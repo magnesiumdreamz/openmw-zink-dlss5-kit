@@ -1,2 +1,3 @@
-# DLSS5-Feeder 0.7.0 validated with the Vulkan resize/device-idle fix.
-74974FA6798D4F09E2A3283D8422FFD7B041A444EFBE40BCB7D1D9D21C7F8234
+# DLSS5-Feeder v0.12.1-beta.2 with the carried-forward resize/device-idle fix.
+# NR works on RTX 3090; NVIDIA Event 153 errors remain. See docs/validation.md.
+E3C56B515B3C0661E8230288BD509CEACB167237F083D3669A671D0F6B259115

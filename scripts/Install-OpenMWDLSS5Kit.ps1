@@ -66,6 +66,8 @@ $mesa = Resolve-Directory $MesaPath 'Mesa'
 $reshadeShaders = Resolve-Directory $ReShadeShaderPath 'ReShade shaders'
 if ($BuildPatchedFeeder) {
     if ($FeederPath) { throw 'Use either -FeederPath or -BuildPatchedFeeder, not both.' }
+    # Do not let WhatIf partially execute the non-ShouldProcess build helper.
+    if (-not $PSCmdlet.ShouldProcess($FeederBuildOutputPath, 'Download, patch, and build Feeder before installation')) { return }
     $FeederPath = $FeederBuildOutputPath
     & (Join-Path $PSScriptRoot 'Build-PatchedDLSS5Feeder.ps1') -OutputPath $FeederPath -WorkPath $FeederBuildWorkPath
 }
@@ -95,7 +97,7 @@ $required = [ordered]@{
     VortShader = Find-OneFile $vort 'vort_Motion.fx' 'VORT'
     QuintShader = Find-OneFile $quint 'qUINT_mxao.fx' 'qUINT'
     QuintInclude = Find-OneFile $quint 'qUINT_common.fxh' 'qUINT'
-    RenoDXAddon = Find-OneFile $renodx 'renodx-dlss5.addon64' 'RenoDX/RHI'
+    RenoDXAddon = & (Join-Path $PSScriptRoot 'Get-TestedRenoDXAddon.ps1') -RenoDXPath $renodx
     DLSS = Find-OneFile $renodx 'nvngx_dlss.dll' 'RenoDX/RHI'
     DLSSNR = Find-OneFile $renodx 'nvngx_dlssnr.dll' 'RenoDX/RHI'
 }
@@ -107,11 +109,15 @@ $generatedFeederIsValid = $false
 if ($BuildPatchedFeeder -and (Test-Path -LiteralPath $generatedProvenance -PathType Leaf)) {
     $provenance = Get-Content -LiteralPath $generatedProvenance -Raw | ConvertFrom-Json
     $patchHash = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'patches\dlss5-feeder-vulkan-resize-idle.patch') -Algorithm SHA256).Hash
-    $generatedFeederIsValid = $provenance.feederSourceCommit -eq '7c58e39e55e03f971da7d0002c837eed7d21a243' -and
+    $generatedFeederIsValid = $provenance.feederSourceCommit -eq 'b4e92bb6c8bfa73c3bfa63decfb083863f48a192' -and
         $provenance.patchSha256 -eq $patchHash -and $provenance.addonSha256 -eq $feederHash
 }
 if ($feederHash -notin $knownFeederHashes -and -not $generatedFeederIsValid -and -not $AllowUnvalidatedFeeder) {
     throw "Unvalidated dlss5-feed.addon64 (SHA256 $feederHash). Use the tested resize-safe build, build the included patch, or explicitly accept resolution-change crash risk with -AllowUnvalidatedFeeder. No files were changed."
+}
+
+if ((Get-FileHash -LiteralPath $required.FeederShader).Hash -ne '491815122018D17D460F02ADC0E5F03ABB6E7489E3B8136BA003927EE06858E9') {
+    throw 'Supply the matching v0.12.1-beta.2 DLSS5_Feed.fx; older shaders must not be mixed with this feeder.'
 }
 
 $vortIncludes = @(Get-ChildItem -LiteralPath $vort -Recurse -File -Filter 'vort_*.fxh')

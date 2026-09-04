@@ -108,7 +108,7 @@ Add-Label $pages[0] 'OpenMW Zink DLSS 5 Setup' 28 24 760 42 $headingFont | Out-N
 Add-Label $pages[0] 'This wizard creates a separate experimental OpenMW copy. It does not replace your normal OpenMW folder or include Morrowind game files.' 28 78 770 50 | Out-Null
 Add-Label $pages[0] 'Before continuing, install or collect:' 28 140 760 28 $subheadingFont | Out-Null
 Add-Label $pages[0] "1. A working OpenMW 0.51.0 installation connected to a legal copy of Morrowind.`r`n2. Mesa for Windows, ReShade shader files, VORT shaders, qUINT, and authorized RHI/RenoDX files.`r`n3. Git for Windows and Visual Studio 2022 Build Tools with Desktop development with C++.`r`n4. An NVIDIA RTX GPU and a current driver. This project is verified only on an RTX 3090.`r`n5. ReShade may already be installed, or the wizard can download and install its pinned Vulkan layer." 42 178 760 130 | Out-Null
-Add-Label $pages[0] 'The automatic feeder option downloads source code and builds the patched feeder locally. It cannot download proprietary RenoDX/NVIDIA runtime DLLs.' 28 320 770 52 | Out-Null
+Add-Label $pages[0] 'The automatic option builds patched Feeder 0.12.1-beta.2. The installer also downloads the tested RenoDX 4.70 add-on if needed. NVIDIA runtime DLLs must still be supplied separately.' 28 320 770 52 | Out-Null
 Add-Link $pages[0] 'Open the pinned downloads page' 'https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/blob/main/docs/downloads.md' 28 390 330
 Add-Link $pages[0] 'Open the full installation guide' 'https://github.com/magnesiumdreamz/openmw-zink-dlss5-kit/blob/main/docs/installation.md' 28 424 330
 
@@ -127,7 +127,7 @@ Add-FolderField $pages[1] 'MesaPath' 'Mesa' 'Downloaded and extracted automatica
 Add-FolderField $pages[1] 'ReShadeShaderPath' 'ReShade shaders' 'Downloaded automatically, or select the extracted folder containing the Shaders subfolder.' 350
 Add-FolderField $pages[1] 'VortPath' 'VORT motion shaders' 'Downloaded automatically, or select the folder containing vort_Motion.fx.' 420
 Add-FolderField $pages[1] 'QuintPath' 'qUINT / MXAO' 'Downloaded automatically, or select the folder containing the Shaders subfolder and qUINT_mxao.fx.' 490
-Add-FolderField $pages[1] 'RenoDXPath' 'RHI / RenoDX files' 'Must be selected after authorized RHI setup; it must contain renodx-dlss5.addon64 and NVIDIA DLSS DLLs.' 560
+Add-FolderField $pages[1] 'RenoDXPath' 'RHI / NVIDIA runtime files' 'Supply NVIDIA DLSS DLLs from authorized RHI setup. RenoDX 4.70 is downloaded if the tested add-on is absent.' 560
 
 # Options page
 Add-Label $pages[2] 'Choose setup options' 24 18 760 38 $headingFont | Out-Null

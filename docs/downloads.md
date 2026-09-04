@@ -8,8 +8,9 @@ These links are versioned or commit-pinned so they do not silently change.
 | Mesa 26.2.0 MSVC | [Release archive](https://github.com/pal1000/mesa-dist-win/releases/download/26.2.0/mesa3d-26.2.0-release-msvc.7z) |
 | ReShade 6.8.0 full add-on build | [Installer](https://reshade.me/downloads/ReShade_Setup_6.8.0_Addon.exe) |
 | ReShade shader includes | [Commit 6db142b](https://github.com/crosire/reshade-shaders/archive/6db142b4b1a05c764222e5b0bd9a644b7ccfe1dc.zip) |
-| DLSS5-Feeder source | [Tested commit 7c58e39](https://github.com/jlrouzies-fr/DLSS5-Feeder/archive/7c58e39e55e03f971da7d0002c837eed7d21a243.zip) |
-| DLSS5 feeder shader | [v0.6.0-beta.1 shader](https://github.com/jlrouzies-fr/DLSS5-Feeder/releases/download/v0.6.0-beta.1/DLSS5_Feed.fx) |
+| DLSS5-Feeder source | [v0.12.1-beta.2, commit b4e92bb](https://github.com/jlrouzies-fr/DLSS5-Feeder/archive/b4e92bb6c8bfa73c3bfa63decfb083863f48a192.zip) |
+| DLSS5 feeder shader | [Matching release archive](https://github.com/jlrouzies-fr/DLSS5-Feeder/releases/download/v0.12.1-beta.2/DLSS5-Feeder-0.12.1-beta.2.zip) — use `reshade-shaders/Shaders/DLSS5_Feed.fx`, not the unpatched add-on |
+| RenoDX 4.70 add-on | [RHI versioned archive](https://github.com/RankFTW/rhi-repo/releases/download/renodx-dlss5-4.70/renodx-dlss5_4.70.zip) — downloaded automatically when the tested file is not supplied |
 | NVIDIA NGX/DLSS build SDK | [Pinned NVIDIA/DLSS commit a291cc7](https://github.com/NVIDIA/DLSS/archive/a291cc7d2cc642a51566f3dfd5376f635cd1b284.zip) |
 | Vulkan build headers | [Pinned Khronos commit 3138637](https://github.com/KhronosGroup/Vulkan-Headers/archive/31386378257ac8653ce5b32c93baec385259ebbe.zip) |
 | VORT motion shader | [Commit b410b9f](https://github.com/Vortigern11/vort_Shaders/archive/b410b9f0c0fbb83c8cb42164aaf1655fab386f4a.zip) |
@@ -23,7 +24,7 @@ and a Windows SDK. Passing `-BuildPatchedFeeder` to the kit installer automatica
 downloads the three pinned source archives above, applies
 [`dlss5-feeder-vulkan-resize-idle.patch`](../patches/dlss5-feeder-vulkan-resize-idle.patch),
 and builds the feeder. See [`building-feeder.md`](building-feeder.md) for the exact
-process. The public v0.7.0 binary does not document this OpenMW resize fix.
+process. The upstream binary does not include our carried-forward OpenMW resize patch.
 
 Use RHI/RenoDX to obtain `renodx-dlss5.addon64`, `nvngx_dlss.dll`, and
 `nvngx_dlssnr.dll` from authorized sources. There is intentionally no unofficial DLL
@@ -41,11 +42,12 @@ AFE4C8F13048306307983B8B3D41D5BF00A86820440B0E57DEA10950E1176445  ReShade_Setup_
 C3E325CABE2C056010C9F0DC6F6A2CEFBE7E85F6EA99935BFAC573162F03E9E2  RHI-Setup.exe
 231BA34A75556F9943E359559A89B0D0CC2CAA322D9DCDEE5630061BF9FE13B6  vort_Shaders archive
 2F6FF2F5DD39FF400C07ECBBFD1156604459F44D9028D07FA6D98B84D4CFBFA9  qUINT archive
-74974FA6798D4F09E2A3283D8422FFD7B041A444EFBE40BCB7D1D9D21C7F8234  patched dlss5-feed.addon64
-2233D2F04220E4B71832ED6A0A980F0646AC79966F064B10A0566B209FC44B72  DLSS5_Feed.fx
+E3C56B515B3C0661E8230288BD509CEACB167237F083D3669A671D0F6B259115  tested patched dlss5-feed.addon64 0.12.1-beta.2
+491815122018D17D460F02ADC0E5F03ABB6E7489E3B8136BA003927EE06858E9  DLSS5_Feed.fx (release CRLF)
 C85F971CE023C9F3492FC7455F0B01A24BA18EA39636407A846902C4360B0B7E  nvngx_dlss.dll 310.8.0
 4C5BD1171C7336B4B04FB394DE51DA285AB6EAD6F922D7AFDEC163F71C319D74  nvngx_dlssnr.dll 310.8.SF
-9150097CDEE2953CDC9894D2E5606EA5100E6C8F95FC7BB1B407328B4391A07A  renodx-dlss5.addon64
+D5ADF82EB44B065F4C590AC91FE824BAB07AFEA0EB9F994BDE936710C8593952  renodx-dlss5.addon64 4.70
+D6E356D01B429AF6288F488A4926C44F1D779A7D4586EE8C79D04D3A09A536E6  renodx-dlss5_4.70.zip
 ```
 
 Checksums identify exact files; they do not grant redistribution rights.

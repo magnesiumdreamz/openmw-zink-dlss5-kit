@@ -22,7 +22,7 @@ unfilled. Choosing **Yes** enables a one-run override, records the unverified fi
 both hashes in the prerequisite manifest, and displays the warning again afterward.
 
 The same step downloads the verified RHI installer, but does not run it silently or
-obtain proprietary RenoDX/NVIDIA runtime DLLs. Complete the authorized RHI workflow,
+obtain NVIDIA runtime DLLs. RenoDX 4.70 is fetched separately by the backend when needed. Complete the authorized RHI workflow,
 then browse to the folder containing the required runtime files. Morrowind itself is
 never downloaded or copied by this kit. The wizard can also compile the open-source
 patched feeder and install and verify the pinned ReShade full add-on Vulkan layer.
@@ -63,7 +63,7 @@ DLSS5-Feeder:    generated with -BuildPatchedFeeder, or supply
                  dlss5-feed.addon64 and DLSS5_Feed.fx with -FeederPath
 VORT:            vort_Motion.fx, vort_*.fxh, required vort_* texture files
 qUINT:           qUINT_mxao.fx, qUINT_common.fxh
-RenoDX/RHI:      renodx-dlss5.addon64, nvngx_dlss.dll, nvngx_dlssnr.dll
+RenoDX/RHI:      nvngx_dlss.dll, nvngx_dlssnr.dll; optional tested RenoDX 4.70 add-on
 ```
 
 Use authorized NVIDIA binaries. Do not download DLLs from random mirrors.

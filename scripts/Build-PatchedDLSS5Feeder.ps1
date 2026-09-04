@@ -7,10 +7,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$sourceCommit = '7c58e39e55e03f971da7d0002c837eed7d21a243'
+$sourceCommit = 'b4e92bb6c8bfa73c3bfa63decfb083863f48a192' # v0.12.1-beta.2
 $ngxCommit = 'a291cc7d2cc642a51566f3dfd5376f635cd1b284'
 $vulkanCommit = '31386378257ac8653ce5b32c93baec385259ebbe'
-$shaderHash = '2233D2F04220E4B71832ED6A0A980F0646AC79966F064B10A0566B209FC44B72'
+$shaderHash = '491815122018D17D460F02ADC0E5F03ABB6E7489E3B8136BA003927EE06858E9'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $patchPath = Join-Path $projectRoot 'patches\dlss5-feeder-vulkan-resize-idle.patch'
 
@@ -68,11 +68,6 @@ $shaderPath = Join-Path $output 'DLSS5_Feed.fx'
 Download-File "https://github.com/jlrouzies-fr/DLSS5-Feeder/archive/$sourceCommit.zip" $feederZip -Zip
 Download-File "https://github.com/NVIDIA/DLSS/archive/$ngxCommit.zip" $ngxZip -Zip
 Download-File "https://github.com/KhronosGroup/Vulkan-Headers/archive/$vulkanCommit.zip" $vulkanZip -Zip
-Download-File 'https://github.com/jlrouzies-fr/DLSS5-Feeder/releases/download/v0.6.0-beta.1/DLSS5_Feed.fx' $shaderPath
-
-if ((Get-FileHash -LiteralPath $shaderPath -Algorithm SHA256).Hash -ne $shaderHash) {
-    throw 'The downloaded DLSS5_Feed.fx does not match the validated SHA256. Delete it and retry.'
-}
 
 if (Test-Path -LiteralPath $sourceRoot) {
     Remove-Item -LiteralPath $sourceRoot -Recurse -Force
@@ -94,6 +89,15 @@ if ($feederExtracted.Count -ne 1 -or $ngxExtracted.Count -ne 1 -or $vulkanExtrac
     throw 'One of the pinned source archives had an unexpected directory layout.'
 }
 Get-ChildItem -LiteralPath $feederExtracted[0].FullName -Force | Copy-Item -Destination $sourceRoot -Recurse -Force
+
+# Use the shader from the same pinned source, never a cached older output shader.
+$sourceShader = Join-Path $sourceRoot 'shaders\DLSS5_Feed.fx'
+if ((Get-FileHash -LiteralPath $sourceShader -Algorithm SHA256).Hash -ne '71696BC34536521BB90852828A601DED18C91860D188016D31462556A3BCAA92') {
+    throw 'The pinned source shader does not match the tested v0.12.1-beta.2 shader.'
+}
+# Release packaging uses CRLF. Normalize only newlines to reproduce the tested file.
+[IO.File]::WriteAllText($shaderPath, (([IO.File]::ReadAllText($sourceShader)) -replace '\r?\n', "`r`n"), [Text.UTF8Encoding]::new($false))
+if ((Get-FileHash -LiteralPath $shaderPath).Hash -ne $shaderHash) { throw 'Release shader hash verification failed.' }
 
 & git.exe -C $sourceRoot apply --check $patchPath
 if ($LASTEXITCODE -ne 0) { throw 'The resize-safety patch does not apply cleanly to the pinned feeder source.' }

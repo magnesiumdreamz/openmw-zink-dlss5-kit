@@ -1,5 +1,10 @@
 # Validation record
 
+## September 4 component update
+
+See [current test results and remaining errors](september-4-update.md). The records
+below are historical; they do not establish error-free operation of the newer stack.
+
 ## Fresh isolated repository install — 2026-09-02
 
 The installer was run into the new disposable directory
